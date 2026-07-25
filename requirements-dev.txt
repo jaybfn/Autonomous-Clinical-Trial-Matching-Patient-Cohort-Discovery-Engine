@@ -1,0 +1,3 @@
+# Dev/test tooling (install with: pip install -r requirements-dev.txt)
+# Runtime package deps live in pyproject.toml [project.dependencies].
+-e .[dev]
