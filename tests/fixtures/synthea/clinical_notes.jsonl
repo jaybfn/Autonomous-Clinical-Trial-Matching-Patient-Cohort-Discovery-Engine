@@ -1,0 +1,2 @@
+{"note_id":"n-001","patient_id":"p-001","encounter_id":"e-001","authored_at":"2024-02-01T12:00:00Z","text":"Patient Jane Doe MRN 1234567 presents with hyperglycemia. Phone 617-555-0100. A1c elevated; continue metformin."}
+{"note_id":"n-002","patient_id":"p-002","encounter_id":"e-002","authored_at":"2024-02-03T15:30:00Z","text":"John Smith SSN 078-05-1120 seen for hypertension follow-up. BP improved on lisinopril."}
