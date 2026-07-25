@@ -8,13 +8,15 @@ Enterprise event-driven system for clinical trial matching and patient cohort di
 - **Compute:** FastAPI + LangGraph agents on Private GKE (Workload Identity)
 - **Warehouse / vectors:** Snowflake (dbt) + Qdrant
 - **Primary datasets:** Synthea (synthetic EPR) + ClinicalTrials.gov (eligibility text)
+- **Observability:** OpenTelemetry (PHI-safe spans) → OTLP (Cloud Trace in later phases)
+- **GCP project:** `autonomous-agent-503517` via env `GCP_PROJECT_ID` (see `.env.example`)
 - **IaC:** Terraform (VPC, NAT, GKE, Pub/Sub, IAM)
 
 ## Local development
 
 ### Prerequisites
 
-- Python 3.9+
+- **Python 3.10+** (OpenTelemetry floor; Dev Container uses 3.11)
 - [VS Code Dev Containers](https://code.visualstudio.com/docs/devcontainers/containers) (recommended) **or** local pip
 
 ### Bootstrap
@@ -23,10 +25,10 @@ Enterprise event-driven system for clinical trial matching and patient cohort di
 # Dev Container: reopen in container, then:
 make test
 
-# Local:
-make install
-make test
-make lint
+# Local (Windows example with 3.10):
+py -3.10 -m pip install -e ".[dev]"
+py -3.10 -m pytest
+cp .env.example .env   # set GCP_PROJECT_ID=autonomous-agent-503517
 ```
 
 ### Coding standards
@@ -44,7 +46,9 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 |-------|--------|
 | 0 Project Setup & DevContainer | Complete |
 | 0.5 Data Sources (Synthea + ClinicalTrials.gov) | Complete |
-| 1–14 | Planned |
+| 1 Shared Contracts & Config | Complete |
+| 1.5 OpenTelemetry Tracing Skeleton | Complete |
+| 2–14 | Planned |
 
 ## Package
 

@@ -7,10 +7,16 @@ name = "trialmatch"
 version = "0.1.0"
 description = "Autonomous Clinical Trial Matching & Patient Cohort Discovery Engine"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license = { text = "Proprietary" }
 authors = [{ name = "TrialMatch Engineering" }]
-dependencies = []
+dependencies = [
+    "pydantic>=2.0",
+    "pydantic-settings>=2.0",
+    "opentelemetry-api>=1.20",
+    "opentelemetry-sdk>=1.20",
+    "opentelemetry-exporter-otlp>=1.20",
+]
 
 [project.optional-dependencies]
 dev = [
@@ -29,8 +35,10 @@ addopts = "-q"
 
 [tool.ruff]
 line-length = 100
-target-version = "py39"
+target-version = "py310"
 src = ["src", "tests", "scripts"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
+# Optional[] kept for broader pydantic typing compatibility in shared models.
+ignore = ["UP045"]
