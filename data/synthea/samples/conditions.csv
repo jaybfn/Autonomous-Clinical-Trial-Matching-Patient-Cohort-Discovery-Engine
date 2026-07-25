@@ -1,0 +1,4 @@
+PATIENT,START,STOP,CODE,DESCRIPTION
+p-001,2020-03-01,,44054006,Diabetes mellitus type 2
+p-002,2018-07-12,,59621000,Essential hypertension
+p-003,2023-01-05,2023-06-01,10509002,Acute bronchitis
