@@ -43,7 +43,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 | Phase | Status |
 |-------|--------|
 | 0 Project Setup & DevContainer | Complete |
-| 0.5 Data Sources (Synthea + ClinicalTrials.gov) | Planned |
+| 0.5 Data Sources (Synthea + ClinicalTrials.gov) | Complete |
 | 1–14 | Planned |
 
 ## Package
