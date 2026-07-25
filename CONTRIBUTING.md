@@ -14,10 +14,13 @@ For every functional change:
 ## Local checks before PR
 
 ```bash
-make install
-make test
-make lint
+# Requires Python 3.10+ (OpenTelemetry floor)
+py -3.10 -m pip install -e ".[dev]"
+py -3.10 -m pytest
+py -3.10 -m ruff check src tests
 ```
+
+Copy `.env.example` → `.env` and keep `GCP_PROJECT_ID=autonomous-agent-503517`.
 
 ## Branch & PR expectations
 

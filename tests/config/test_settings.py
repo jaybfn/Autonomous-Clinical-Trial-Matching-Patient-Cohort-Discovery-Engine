@@ -40,3 +40,22 @@ def test_settings_defaults_are_non_secret(monkeypatch: pytest.MonkeyPatch) -> No
     assert settings.agent_read_role == "AGENT_READ_ROLE"
     assert settings.audit_write_role == "AUDIT_WRITE_ROLE"
     assert settings.qdrant_collection == "trial_criteria"
+
+
+def test_settings_otel_defaults(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("GCP_PROJECT_ID", "autonomous-agent-503517")
+    monkeypatch.delenv("OTEL_EXPORTER_OTLP_ENDPOINT", raising=False)
+    monkeypatch.delenv("OTEL_SERVICE_NAME", raising=False)
+    settings = Settings(_env_file=None)
+    assert settings.gcp_project_id == "autonomous-agent-503517"
+    assert settings.otel_service_name == "trialmatch"
+    assert settings.otel_exporter_otlp_endpoint == ""
+
+
+def test_settings_otel_from_env(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("GCP_PROJECT_ID", "autonomous-agent-503517")
+    monkeypatch.setenv("OTEL_SERVICE_NAME", "trialmatch-api")
+    monkeypatch.setenv("OTEL_EXPORTER_OTLP_ENDPOINT", "http://localhost:4317")
+    settings = Settings(_env_file=None)
+    assert settings.otel_service_name == "trialmatch-api"
+    assert settings.otel_exporter_otlp_endpoint == "http://localhost:4317"
