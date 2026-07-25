@@ -10,7 +10,10 @@ readme = "README.md"
 requires-python = ">=3.9"
 license = { text = "Proprietary" }
 authors = [{ name = "TrialMatch Engineering" }]
-dependencies = []
+dependencies = [
+    "pydantic>=2.0",
+    "pydantic-settings>=2.0",
+]
 
 [project.optional-dependencies]
 dev = [
@@ -34,3 +37,5 @@ src = ["src", "tests", "scripts"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
+# Keep typing.Optional for Pydantic on Python 3.9 (no PEP 604 runtime eval).
+ignore = ["UP045"]
