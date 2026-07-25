@@ -44,7 +44,8 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 |-------|--------|
 | 0 Project Setup & DevContainer | Complete |
 | 0.5 Data Sources (Synthea + ClinicalTrials.gov) | Complete |
-| 1–14 | Planned |
+| 1 Shared Contracts & Config | Complete |
+| 2–14 | Planned |
 
 ## Package
 
