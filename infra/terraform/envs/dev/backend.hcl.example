@@ -1,0 +1,6 @@
+# Optional local backend config (do not commit real state).
+# Usage:
+#   terraform init -backend-config=backend.hcl
+
+bucket = "autonomous-agent-503517-tf-state"
+prefix = "trialmatch/dev"
