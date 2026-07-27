@@ -22,10 +22,15 @@ Enterprise event-driven system for clinical trial matching and patient cohort di
 ### Bootstrap
 
 ```bash
-# Dev Container: reopen in container, then:
-make test
+# Host (once): ADC for GCP / Terraform
+gcloud auth application-default login
 
-# Local (Windows example with 3.10):
+# Dev Container (recommended): Cursor → Dev Containers: Reopen in Container
+# Uses Anysphere Dev Containers + Docker Desktop; mounts %APPDATA%\gcloud as ADC
+make test
+gcloud config get-value project   # autonomous-agent-503517
+
+# Local without container (Windows example with 3.10):
 py -3.10 -m pip install -e ".[dev]"
 py -3.10 -m pytest
 cp .env.example .env   # set GCP_PROJECT_ID=autonomous-agent-503517
@@ -48,7 +53,8 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 | 0.5 Data Sources (Synthea + ClinicalTrials.gov) | Complete |
 | 1 Shared Contracts & Config | Complete |
 | 1.5 OpenTelemetry Tracing Skeleton | Complete |
-| 2–14 | Planned |
+| 2 Terraform VPC & Networking | Complete |
+| 3–14 | Planned |
 
 ## Package
 
