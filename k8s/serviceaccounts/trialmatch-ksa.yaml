@@ -1,0 +1,19 @@
+# Namespace + KSA for trialmatch workloads (Workload Identity).
+# Annotation value MUST match Terraform output `ksa_annotation`
+# (runtime GSA: trialmatch-runtime@autonomous-agent-503517.iam.gserviceaccount.com).
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: trialmatch
+  labels:
+    app.kubernetes.io/name: trialmatch
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: trialmatch-ksa
+  namespace: trialmatch
+  annotations:
+    iam.gke.io/gcp-service-account: trialmatch-runtime@autonomous-agent-503517.iam.gserviceaccount.com
+  labels:
+    app.kubernetes.io/name: trialmatch

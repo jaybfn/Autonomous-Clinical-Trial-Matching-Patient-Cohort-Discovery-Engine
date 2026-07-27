@@ -21,7 +21,16 @@ def _tf_files() -> list[Path]:
 
 
 def test_required_modules_exist() -> None:
-    for module in ("vpc", "cloud_nat", "firewall"):
+    modules = (
+        "vpc",
+        "cloud_nat",
+        "firewall",
+        "gke",
+        "artifact_registry",
+        "iam",
+        "workload_identity",
+    )
+    for module in modules:
         module_dir = TF_ROOT / "modules" / module
         assert (module_dir / "main.tf").is_file(), f"missing {module}/main.tf"
         assert (module_dir / "variables.tf").is_file()

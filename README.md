@@ -54,7 +54,19 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 | 1 Shared Contracts & Config | Complete |
 | 1.5 OpenTelemetry Tracing Skeleton | Complete |
 | 2 Terraform VPC & Networking | Complete |
-| 3–14 | Planned |
+| 3 Private GKE, IAM & Workload Identity | Complete |
+| 4–14 | Planned |
+
+## Deployed infra outputs (dev)
+
+Captured from `terraform apply` in `infra/terraform/envs/dev` (project `autonomous-agent-503517`). Refresh anytime with `terraform output`.
+
+| Output | Value |
+|--------|--------|
+| Cluster | `trialmatch-gke` (private endpoint `172.16.0.2`) |
+| Registry | `us-central1-docker.pkg.dev/autonomous-agent-503517/trialmatch-docker` |
+| Runtime GSA / KSA annotation | `trialmatch-runtime@autonomous-agent-503517.iam.gserviceaccount.com` |
+| NAT IPs (Snowflake later) | `136.112.132.174`, `34.61.252.214` |
 
 ## Package
 
