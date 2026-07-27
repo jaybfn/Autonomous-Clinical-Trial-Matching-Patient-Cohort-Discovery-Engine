@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -25,7 +25,7 @@ class ClinicalEvent(BaseModel):
     event_type: EventType
     source: EventSource
     patient_id: str = Field(..., min_length=1)
-    occurred_at: Optional[str] = None
+    occurred_at: str | None = None
     payload: dict[str, Any] = Field(default_factory=dict)
 
     @field_validator("patient_id")

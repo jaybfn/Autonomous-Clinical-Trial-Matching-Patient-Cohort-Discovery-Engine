@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -36,4 +36,4 @@ class TrialMatch(BaseModel):
 class TrialMatchResult(BaseModel):
     patient_id: str = Field(..., min_length=1)
     matches: list[TrialMatch] = Field(default_factory=list)
-    notes: Optional[str] = None
+    notes: str | None = None

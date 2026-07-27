@@ -2,19 +2,19 @@
 
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field, field_validator
 
 
 class PatientDemographics(BaseModel):
     patient_id: str = Field(..., min_length=1)
-    birthdate: Optional[str] = None
-    gender: Optional[str] = None
-    race: Optional[str] = None
-    ethnicity: Optional[str] = None
-    city: Optional[str] = None
-    state: Optional[str] = None
+    birthdate: str | None = None
+    gender: str | None = None
+    race: str | None = None
+    ethnicity: str | None = None
+    city: str | None = None
+    state: str | None = None
 
     @field_validator("patient_id")
     @classmethod
@@ -29,10 +29,10 @@ class PatientFeatures(BaseModel):
     """Structured features produced by the Parser agent for Matcher input."""
 
     patient_id: str = Field(..., min_length=1)
-    demographics: Optional[PatientDemographics] = None
+    demographics: PatientDemographics | None = None
     conditions: list[str] = Field(default_factory=list)
     labs: list[dict[str, Any]] = Field(default_factory=list)
-    note_summary: Optional[str] = None
+    note_summary: str | None = None
 
     @field_validator("patient_id")
     @classmethod

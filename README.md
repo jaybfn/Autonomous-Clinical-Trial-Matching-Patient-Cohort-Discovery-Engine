@@ -42,6 +42,7 @@ cp .env.example .env   # set GCP_PROJECT_ID=autonomous-agent-503517
 2. **Local README rule** — every code file `X` has a gitignored companion `X.README.md`.
 3. **Local learning guides** — phase-wise file explanations live in gitignored `doc/` (start at `doc/README.md`).
 4. **Zero hardcoded secrets** — ADC / Workload Identity only.
+5. **Pre-commit hooks** — `make pre-commit-install` once; commits run Ruff/Terraform fmt; pushes run pytest (see [CONTRIBUTING.md](CONTRIBUTING.md)).
 
 See [CONTRIBUTING.md](CONTRIBUTING.md).
 

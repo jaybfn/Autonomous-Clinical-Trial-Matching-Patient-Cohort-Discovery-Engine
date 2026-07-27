@@ -36,6 +36,4 @@ class Settings(BaseSettings):
 
     # OpenTelemetry (Phase 1.5) — empty OTLP endpoint means no remote export
     otel_service_name: str = Field(default="trialmatch", alias="OTEL_SERVICE_NAME")
-    otel_exporter_otlp_endpoint: str = Field(
-        default="", alias="OTEL_EXPORTER_OTLP_ENDPOINT"
-    )
+    otel_exporter_otlp_endpoint: str = Field(default="", alias="OTEL_EXPORTER_OTLP_ENDPOINT")

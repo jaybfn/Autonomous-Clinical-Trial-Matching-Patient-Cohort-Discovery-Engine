@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Iterator
 from contextlib import contextmanager
-from typing import Any, Optional
+from typing import Any
 
 from opentelemetry import trace
 from opentelemetry.sdk.resources import Resource
@@ -48,8 +48,8 @@ def reset_tracer_provider() -> None:
 def configure_tracing(
     *,
     service_name: str = "trialmatch",
-    otlp_endpoint: Optional[str] = None,
-    memory_exporter: Optional[InMemorySpanExporter] = None,
+    otlp_endpoint: str | None = None,
+    memory_exporter: InMemorySpanExporter | None = None,
     force: bool = False,
 ) -> TracerProvider:
     """
@@ -86,7 +86,7 @@ def get_tracer(name: str = _TRACER_NAME) -> Tracer:
 
 
 @contextmanager
-def start_span(name: str, attributes: Optional[dict[str, Any]] = None) -> Iterator[Span]:
+def start_span(name: str, attributes: dict[str, Any] | None = None) -> Iterator[Span]:
     """Start a span with sanitized attributes."""
     tracer = get_tracer()
     cleaned = sanitize_span_attributes(attributes or {})
