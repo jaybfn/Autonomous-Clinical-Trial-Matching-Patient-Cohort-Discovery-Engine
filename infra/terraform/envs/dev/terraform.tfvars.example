@@ -7,3 +7,14 @@ network_name = "trialmatch-vpc"
 subnet_name  = "trialmatch-private"
 subnet_cidr  = "10.10.0.0/20"
 nat_ip_count = 2
+
+cluster_name            = "trialmatch-gke"
+master_ipv4_cidr_block  = "172.16.0.0/28"
+gke_node_count          = 1
+gke_machine_type        = "e2-standard-2"
+gke_disk_size_gb        = 30
+gke_disk_type           = "pd-standard"
+gke_deletion_protection = false
+artifact_repository_id  = "trialmatch-docker"
+ksa_name                = "trialmatch-ksa"
+ksa_namespace           = "trialmatch"

@@ -32,3 +32,13 @@ output "region" {
   description = "Subnet region"
   value       = google_compute_subnetwork.private.region
 }
+
+output "pods_range_name" {
+  description = "Secondary IP range name for GKE pods"
+  value       = "gke-pods"
+}
+
+output "services_range_name" {
+  description = "Secondary IP range name for GKE services"
+  value       = "gke-services"
+}
