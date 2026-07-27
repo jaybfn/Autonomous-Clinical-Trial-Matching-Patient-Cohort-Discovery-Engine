@@ -1,0 +1,49 @@
+# Pre-commit: fast checks on every commit; pytest on push.
+# Install once:  make pre-commit-install
+# Run all:       make pre-commit
+# Docs:          https://pre-commit.com
+
+default_install_hook_types: [pre-commit, pre-push]
+default_stages: [pre-commit]
+
+repos:
+  # --- Hygiene & secret safety (every commit) ---
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+        args: ["--unsafe"]
+      - id: check-json
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: ["--maxkb=1024"]
+      - id: detect-private-key
+      - id: mixed-line-ending
+        args: ["--fix=lf"]
+
+  # --- Python lint + format (matches Makefile / Ruff) ---
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.9.10
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
+
+  # --- Terraform format (needs terraform on PATH; present in Dev Container) ---
+  - repo: https://github.com/antonbabenko/pre-commit-terraform
+    rev: v1.99.1
+    hooks:
+      - id: terraform_fmt
+
+  # --- Tests on push only (keep commits fast for TDD red→green) ---
+  - repo: local
+    hooks:
+      - id: pytest
+        name: pytest
+        entry: python -m pytest
+        language: system
+        pass_filenames: false
+        stages: [pre-push]

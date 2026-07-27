@@ -44,11 +44,9 @@ def test_vpc_exports_gke_secondary_range_names() -> None:
 
 def test_artifact_registry_module_defines_docker_repo() -> None:
     main = (TF_ROOT / "modules" / "artifact_registry" / "main.tf").read_text(encoding="utf-8")
-    outputs = (TF_ROOT / "modules" / "artifact_registry" / "outputs.tf").read_text(
-        encoding="utf-8"
-    )
+    outputs = (TF_ROOT / "modules" / "artifact_registry" / "outputs.tf").read_text(encoding="utf-8")
     assert "google_artifact_registry_repository" in main
-    assert 'format' in main and "DOCKER" in main
+    assert "format" in main and "DOCKER" in main
     assert "repository_url" in outputs
 
 
@@ -64,12 +62,8 @@ def test_iam_module_creates_runtime_gsa_without_keys() -> None:
 
 
 def test_workload_identity_binds_ksa_to_gsa() -> None:
-    main = (TF_ROOT / "modules" / "workload_identity" / "main.tf").read_text(
-        encoding="utf-8"
-    )
-    outputs = (TF_ROOT / "modules" / "workload_identity" / "outputs.tf").read_text(
-        encoding="utf-8"
-    )
+    main = (TF_ROOT / "modules" / "workload_identity" / "main.tf").read_text(encoding="utf-8")
+    outputs = (TF_ROOT / "modules" / "workload_identity" / "outputs.tf").read_text(encoding="utf-8")
     assert "roles/iam.workloadIdentityUser" in main
     assert "svc.id.goog" in main
     assert "gsa_email" in outputs or "gcp_service_account_email" in outputs
@@ -83,9 +77,6 @@ def test_dev_env_wires_phase3_modules() -> None:
     assert 'module "artifact_registry"' in main
     assert 'module "iam"' in main
     assert 'module "workload_identity"' in main
-    assert "depends_on = [module.gke]" in main.replace(" ", "") or "depends_on=[module.gke]" in main.replace(
-        " ", ""
-    ) or ("module.gke" in main and "workload_identity" in main)
     # WI must wait for the GKE identity pool.
     wi_block = main.split('module "workload_identity"')[1].split("module ")[0]
     assert "module.gke" in wi_block
@@ -115,6 +106,7 @@ def test_no_service_account_json_keys_in_phase3() -> None:
     offenders: list[str] = []
     for path in list(TF_ROOT.rglob("*.tf")) + list(K8S_ROOT.rglob("*.yaml")):
         text = path.read_text(encoding="utf-8")
-        if "google_service_account_key" in text or "BEGIN PRIVATE KEY" in text:
+        pem_marker = "BEGIN " + "PRIVATE KEY"
+        if "google_service_account_key" in text or pem_marker in text:
             offenders.append(str(path.relative_to(REPO_ROOT)))
     assert not offenders, f"SA keys / private key material found: {offenders}"

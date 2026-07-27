@@ -90,3 +90,18 @@ def test_makefile_exposes_test_and_lint_targets() -> None:
     makefile = (REPO_ROOT / "Makefile").read_text(encoding="utf-8")
     assert "test:" in makefile
     assert "lint:" in makefile
+    assert "pre-commit-install:" in makefile or "precommit-install:" in makefile
+
+
+def test_pre_commit_config_enforces_lint_and_safety_hooks() -> None:
+    """Fast commit hooks for lint/format/secrets; pytest on pre-push."""
+    config_path = REPO_ROOT / ".pre-commit-config.yaml"
+    assert config_path.is_file()
+    text = config_path.read_text(encoding="utf-8")
+    assert "ruff" in text
+    assert "detect-private-key" in text
+    assert "terraform_fmt" in text or "terraform fmt" in text
+    assert "pytest" in text
+    assert "pre-push" in text
+    pyproject = (REPO_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    assert "pre-commit" in pyproject

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field, field_validator, model_validator
 
@@ -34,7 +34,7 @@ class AuditRecord(BaseModel):
     justification_summary: str = Field(..., min_length=1)
     matched_nct_ids: list[str] = Field(default_factory=list)
     extras: dict[str, Any] = Field(default_factory=dict)
-    created_at: Optional[str] = None
+    created_at: str | None = None
 
     @field_validator("correlation_id", "patient_id", "content_hash", "justification_summary")
     @classmethod

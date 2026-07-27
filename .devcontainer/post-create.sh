@@ -7,6 +7,9 @@ pip install -r requirements-dev.txt
 # Bind-mounted workspace is often owned by a different UID than vscode (Docker/Windows).
 git config --global --add safe.directory /workspace || true
 
+# Git hooks: Ruff/terraform on commit; pytest on push.
+python -m pre_commit install --hook-type pre-commit --hook-type pre-push || true
+
 mkdir -p "${CLOUDSDK_CONFIG:-/home/vscode/.config/gcloud}"
 
 # Project via env is enough for most SDKs; also set active gcloud config in the

@@ -1,9 +1,9 @@
-.PHONY: help install test lint format bootstrap
+.PHONY: help install test lint format bootstrap pre-commit-install pre-commit
 
 help:
-	@echo "Targets: bootstrap install test lint format"
+	@echo "Targets: bootstrap install test lint format pre-commit-install pre-commit"
 
-bootstrap: install
+bootstrap: install pre-commit-install
 
 # Prefer Python 3.10+ (OpenTelemetry floor). Override with: make PYTHON=python3.11 test
 PYTHON ?= python
@@ -22,3 +22,9 @@ lint:
 format:
 	$(PYTHON) -m ruff check --fix src tests
 	$(PYTHON) -m ruff format src tests
+
+pre-commit-install:
+	$(PYTHON) -m pre_commit install --hook-type pre-commit --hook-type pre-push
+
+pre-commit:
+	$(PYTHON) -m pre_commit run --all-files
