@@ -23,3 +23,75 @@ module "firewall" {
   project_id   = var.project_id
   network_name = module.vpc.network_name
 }
+
+# APIs required for Phase 3 (idempotent enable).
+resource "google_project_service" "phase3" {
+  for_each = toset([
+    "container.googleapis.com",
+    "artifactregistry.googleapis.com",
+    "iam.googleapis.com",
+    "iamcredentials.googleapis.com",
+    "cloudresourcemanager.googleapis.com",
+  ])
+
+  project            = var.project_id
+  service            = each.value
+  disable_on_destroy = false
+}
+
+module "iam" {
+  source = "../../modules/iam"
+
+  project_id = var.project_id
+
+  depends_on = [google_project_service.phase3]
+}
+
+module "workload_identity" {
+  source = "../../modules/workload_identity"
+
+  project_id    = var.project_id
+  gsa_name      = module.iam.runtime_gsa_name
+  gsa_email     = module.iam.runtime_gsa_email
+  ksa_name      = var.ksa_name
+  ksa_namespace = var.ksa_namespace
+
+  # Identity pool exists only after the cluster enables Workload Identity.
+  depends_on = [module.gke]
+}
+
+module "artifact_registry" {
+  source = "../../modules/artifact_registry"
+
+  project_id    = var.project_id
+  location      = var.region
+  repository_id = var.artifact_repository_id
+
+  depends_on = [google_project_service.phase3]
+}
+
+module "gke" {
+  source = "../../modules/gke"
+
+  project_id                 = var.project_id
+  cluster_name               = var.cluster_name
+  region                     = var.region
+  network_self_link          = module.vpc.network_self_link
+  subnet_self_link           = module.vpc.private_subnet_self_link
+  pods_range_name            = module.vpc.pods_range_name
+  services_range_name        = module.vpc.services_range_name
+  master_ipv4_cidr_block     = var.master_ipv4_cidr_block
+  node_count                 = var.gke_node_count
+  machine_type               = var.gke_machine_type
+  disk_size_gb               = var.gke_disk_size_gb
+  disk_type                  = var.gke_disk_type
+  node_service_account_email = module.iam.node_gsa_email
+  deletion_protection        = var.gke_deletion_protection
+
+  depends_on = [
+    google_project_service.phase3,
+    module.cloud_nat,
+    module.firewall,
+    module.iam,
+  ]
+}
