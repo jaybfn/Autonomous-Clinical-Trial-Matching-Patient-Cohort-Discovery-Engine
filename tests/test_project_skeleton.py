@@ -53,6 +53,27 @@ def test_devcontainer_files_exist() -> None:
     assert (REPO_ROOT / ".devcontainer" / "Dockerfile").is_file()
 
 
+def test_devcontainer_wires_gcloud_adc_and_project_env() -> None:
+    """Host ADC + gcloud CLI must be available inside the Dev Container."""
+    cfg = (REPO_ROOT / ".devcontainer" / "devcontainer.json").read_text(encoding="utf-8")
+    dockerfile = (REPO_ROOT / ".devcontainer" / "Dockerfile").read_text(encoding="utf-8")
+    post_create = REPO_ROOT / ".devcontainer" / "post-create.sh"
+    assert "google-cloud-cli" in dockerfile
+    assert post_create.is_file()
+    assert "APPDATA" in cfg
+    assert "/mnt/host-gcloud" in cfg
+    assert "GOOGLE_APPLICATION_CREDENTIALS" in cfg
+    assert "CLOUDSDK_CONFIG" in cfg
+    assert "/home/vscode/.config/gcloud" in cfg
+    assert "GCP_PROJECT_ID" in cfg
+    assert "GOOGLE_CLOUD_PROJECT" in cfg
+    assert "safe.directory" in cfg
+    assert "GIT_CONFIG_VALUE_0" in cfg
+    # Must not use the Windows mount as CLOUDSDK_CONFIG (EPERM on credentials.db).
+    assert '"CLOUDSDK_CONFIG": "/mnt/host-gcloud"' not in cfg
+    assert "target=/home/vscode/.config/gcloud" not in cfg
+
+
 def test_vscode_settings_configure_ruff_and_pytest() -> None:
     settings = (REPO_ROOT / ".vscode" / "settings.json").read_text(encoding="utf-8")
     assert "ruff" in settings.lower()
