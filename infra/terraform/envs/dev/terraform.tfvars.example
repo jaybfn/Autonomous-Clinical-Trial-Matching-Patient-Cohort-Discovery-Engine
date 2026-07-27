@@ -1,0 +1,9 @@
+# Copy to terraform.tfvars (gitignored) before plan/apply.
+# Project ID is not a secret; never put service-account keys here.
+
+project_id   = "autonomous-agent-503517"
+region       = "us-central1"
+network_name = "trialmatch-vpc"
+subnet_name  = "trialmatch-private"
+subnet_cidr  = "10.10.0.0/20"
+nat_ip_count = 2

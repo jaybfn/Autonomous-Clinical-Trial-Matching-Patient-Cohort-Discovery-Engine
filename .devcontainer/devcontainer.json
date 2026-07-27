@@ -7,7 +7,17 @@
   "workspaceFolder": "/workspace",
   "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
   "remoteUser": "vscode",
-  "postCreateCommand": "pip install -r requirements-dev.txt",
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
+  "containerEnv": {
+    "GCP_PROJECT_ID": "${localEnv:GCP_PROJECT_ID:autonomous-agent-503517}",
+    "GOOGLE_CLOUD_PROJECT": "${localEnv:GCP_PROJECT_ID:autonomous-agent-503517}",
+    "CLOUDSDK_CONFIG": "/home/vscode/.config/gcloud",
+    "CLOUDSDK_PYTHON": "/usr/local/bin/python",
+    "GOOGLE_APPLICATION_CREDENTIALS": "/mnt/host-gcloud/application_default_credentials.json",
+    "GIT_CONFIG_COUNT": "1",
+    "GIT_CONFIG_KEY_0": "safe.directory",
+    "GIT_CONFIG_VALUE_0": "/workspace"
+  },
   "customizations": {
     "vscode": {
       "extensions": [
@@ -36,5 +46,7 @@
     "ghcr.io/devcontainers/features/terraform:1": {}
   },
   "forwardPorts": [],
-  "mounts": []
+  "mounts": [
+    "source=${localEnv:APPDATA}/gcloud,target=/mnt/host-gcloud,type=bind,readonly,consistency=cached"
+  ]
 }

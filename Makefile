@@ -5,17 +5,20 @@ help:
 
 bootstrap: install
 
+# Prefer Python 3.10+ (OpenTelemetry floor). Override with: make PYTHON=python3.11 test
+PYTHON ?= python
+
 install:
-	python -m pip install --upgrade pip
-	python -m pip install -r requirements-dev.txt
+	$(PYTHON) -m pip install --upgrade pip
+	$(PYTHON) -m pip install -r requirements-dev.txt
 
 test:
-	python -m pytest
+	$(PYTHON) -m pytest
 
 lint:
-	python -m ruff check src tests
-	python -m ruff format --check src tests
+	$(PYTHON) -m ruff check src tests
+	$(PYTHON) -m ruff format --check src tests
 
 format:
-	python -m ruff check --fix src tests
-	python -m ruff format src tests
+	$(PYTHON) -m ruff check --fix src tests
+	$(PYTHON) -m ruff format src tests

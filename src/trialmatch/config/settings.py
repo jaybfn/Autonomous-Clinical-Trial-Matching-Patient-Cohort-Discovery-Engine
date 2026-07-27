@@ -33,3 +33,9 @@ class Settings(BaseSettings):
 
     pubsub_clinical_topic: str = Field(default="clinical-records", alias="PUBSUB_CLINICAL_TOPIC")
     pubsub_lab_topic: str = Field(default="lab-updates", alias="PUBSUB_LAB_TOPIC")
+
+    # OpenTelemetry (Phase 1.5) — empty OTLP endpoint means no remote export
+    otel_service_name: str = Field(default="trialmatch", alias="OTEL_SERVICE_NAME")
+    otel_exporter_otlp_endpoint: str = Field(
+        default="", alias="OTEL_EXPORTER_OTLP_ENDPOINT"
+    )
