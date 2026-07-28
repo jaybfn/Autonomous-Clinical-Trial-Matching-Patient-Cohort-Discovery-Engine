@@ -28,6 +28,8 @@ class Settings(BaseSettings):
     snowflake_warehouse: str = Field(default="", alias="SNOWFLAKE_WAREHOUSE")
     snowflake_database: str = Field(default="", alias="SNOWFLAKE_DATABASE")
     snowflake_schema: str = Field(default="PUBLIC", alias="SNOWFLAKE_SCHEMA")
+    # Path to PEM on disk (often fetched from Secret Manager) — never the key material itself.
+    snowflake_private_key_path: str = Field(default="", alias="SNOWFLAKE_PRIVATE_KEY_PATH")
     agent_read_role: str = Field(default="AGENT_READ_ROLE", alias="AGENT_READ_ROLE")
     audit_write_role: str = Field(default="AUDIT_WRITE_ROLE", alias="AUDIT_WRITE_ROLE")
 

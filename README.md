@@ -57,7 +57,8 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 | 2 Terraform VPC & Networking | Complete |
 | 3 Private GKE, IAM & Workload Identity | Complete |
 | 4 Pub/Sub, Ingress & Secret Manager IAM | Complete |
-| 5–14 | Planned |
+| 5 Snowflake RBAC, Network Policy & dbt | Complete |
+| 6–14 | Planned |
 
 ## Deployed infra outputs (dev)
 
