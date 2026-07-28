@@ -59,7 +59,8 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 | 4 Pub/Sub, Ingress & Secret Manager IAM | Complete |
 | 5 Snowflake RBAC, Network Policy & dbt | Complete |
 | 6 Qdrant Vector Store & Embeddings | Complete |
-| 7–14 | Planned |
+| 7 Agent 1: Compliance (PII Scrub) | Complete |
+| 8–14 | Planned |
 
 ## Deployed infra outputs (dev)
 
