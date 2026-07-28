@@ -62,3 +62,48 @@ output "workload_identity_member" {
   description = "KSA principal bound as workloadIdentityUser"
   value       = module.workload_identity.workload_identity_member
 }
+
+output "clinical_topic" {
+  description = "Pub/Sub topic for clinical record events"
+  value       = module.pubsub.clinical_topic
+}
+
+output "lab_topic" {
+  description = "Pub/Sub topic for lab update events"
+  value       = module.pubsub.lab_topic
+}
+
+output "clinical_subscription" {
+  description = "Subscription for clinical-records (ingestion pull)"
+  value       = module.pubsub.clinical_subscription
+}
+
+output "lab_subscription" {
+  description = "Subscription for lab-updates (ingestion pull)"
+  value       = module.pubsub.lab_subscription
+}
+
+output "clinical_dlq_topic" {
+  description = "Dead-letter topic for clinical-records"
+  value       = module.pubsub.clinical_dlq_topic
+}
+
+output "lab_dlq_topic" {
+  description = "Dead-letter topic for lab-updates"
+  value       = module.pubsub.lab_dlq_topic
+}
+
+output "secret_ids" {
+  description = "Secret Manager secret IDs (values set out-of-band)"
+  value       = module.secret_manager.secret_ids
+}
+
+output "ingress_static_ip_name" {
+  description = "Global address name for GKE Ingress annotation"
+  value       = module.ingress.static_ip_name
+}
+
+output "ingress_static_ip_address" {
+  description = "Reserved Ingress / HTTPS LB IPv4"
+  value       = module.ingress.static_ip_address
+}

@@ -24,7 +24,7 @@ module "firewall" {
   network_name = module.vpc.network_name
 }
 
-# APIs required for Phase 3 (idempotent enable).
+# APIs required for Phase 3–4 (idempotent enable).
 resource "google_project_service" "phase3" {
   for_each = toset([
     "container.googleapis.com",
@@ -32,6 +32,9 @@ resource "google_project_service" "phase3" {
     "iam.googleapis.com",
     "iamcredentials.googleapis.com",
     "cloudresourcemanager.googleapis.com",
+    "pubsub.googleapis.com",
+    "secretmanager.googleapis.com",
+    "compute.googleapis.com",
   ])
 
   project            = var.project_id
@@ -94,4 +97,38 @@ module "gke" {
     module.firewall,
     module.iam,
   ]
+}
+
+module "pubsub" {
+  source = "../../modules/pubsub"
+
+  project_id        = var.project_id
+  runtime_gsa_email = module.iam.runtime_gsa_email
+
+  clinical_topic_name        = var.clinical_topic_name
+  lab_topic_name             = var.lab_topic_name
+  clinical_subscription_name = var.clinical_subscription_name
+  lab_subscription_name      = var.lab_subscription_name
+
+  depends_on = [google_project_service.phase3, module.iam]
+}
+
+module "secret_manager" {
+  source = "../../modules/secret_manager"
+
+  project_id         = var.project_id
+  accessor_gsa_email = module.iam.runtime_gsa_email
+  secret_ids         = var.secret_ids
+
+  depends_on = [google_project_service.phase3, module.iam]
+}
+
+module "ingress" {
+  source = "../../modules/ingress"
+
+  project_id   = var.project_id
+  address_name = var.ingress_address_name
+  domain       = var.ingress_domain
+
+  depends_on = [google_project_service.phase3]
 }

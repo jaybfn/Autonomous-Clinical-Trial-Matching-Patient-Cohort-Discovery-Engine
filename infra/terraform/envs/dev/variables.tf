@@ -92,3 +92,48 @@ variable "ksa_namespace" {
   type        = string
   default     = "trialmatch"
 }
+
+variable "clinical_topic_name" {
+  description = "Pub/Sub topic for clinical record events"
+  type        = string
+  default     = "clinical-records"
+}
+
+variable "lab_topic_name" {
+  description = "Pub/Sub topic for lab update events"
+  type        = string
+  default     = "lab-updates"
+}
+
+variable "clinical_subscription_name" {
+  description = "Subscription name for clinical-records"
+  type        = string
+  default     = "clinical-records-sub"
+}
+
+variable "lab_subscription_name" {
+  description = "Subscription name for lab-updates"
+  type        = string
+  default     = "lab-updates-sub"
+}
+
+variable "secret_ids" {
+  description = "Secret Manager secret IDs (shells only — values out-of-band)"
+  type        = list(string)
+  default = [
+    "trialmatch-snowflake-private-key",
+    "trialmatch-snowflake-passphrase",
+  ]
+}
+
+variable "ingress_address_name" {
+  description = "Global static IP name for Ingress"
+  type        = string
+  default     = "trialmatch-ingress-ip"
+}
+
+variable "ingress_domain" {
+  description = "Optional public hostname for managed SSL (empty defers cert)"
+  type        = string
+  default     = ""
+}

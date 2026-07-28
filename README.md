@@ -56,7 +56,8 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 | 1.5 OpenTelemetry Tracing Skeleton | Complete |
 | 2 Terraform VPC & Networking | Complete |
 | 3 Private GKE, IAM & Workload Identity | Complete |
-| 4–14 | Planned |
+| 4 Pub/Sub, Ingress & Secret Manager IAM | Complete |
+| 5–14 | Planned |
 
 ## Deployed infra outputs (dev)
 
