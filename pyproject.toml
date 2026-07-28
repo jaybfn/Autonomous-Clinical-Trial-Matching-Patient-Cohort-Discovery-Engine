@@ -25,8 +25,11 @@ dev = [
     "ruff>=0.6",
     "pre-commit>=4.0",
 ]
-snowflake = [
-    "snowflake-connector-python>=3.6",
+qdrant = [
+    "qdrant-client>=1.9",
+]
+vertex = [
+    "google-cloud-aiplatform>=1.60",
 ]
 
 [tool.setuptools.packages.find]

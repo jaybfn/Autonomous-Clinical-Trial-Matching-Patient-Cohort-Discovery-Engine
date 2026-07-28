@@ -107,3 +107,13 @@ output "ingress_static_ip_address" {
   description = "Reserved Ingress / HTTPS LB IPv4"
   value       = module.ingress.static_ip_address
 }
+
+output "qdrant_disk_name" {
+  description = "Persistent disk name for Qdrant storage"
+  value       = module.qdrant_disk.disk_name
+}
+
+output "qdrant_disk_zone" {
+  description = "Zone of the Qdrant persistent disk"
+  value       = module.qdrant_disk.zone
+}

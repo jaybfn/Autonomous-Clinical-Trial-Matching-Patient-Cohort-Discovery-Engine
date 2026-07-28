@@ -132,3 +132,15 @@ module "ingress" {
 
   depends_on = [google_project_service.phase3]
 }
+
+module "qdrant_disk" {
+  source = "../../modules/qdrant_disk"
+
+  project_id   = var.project_id
+  disk_name    = var.qdrant_disk_name
+  zone         = var.qdrant_disk_zone
+  disk_size_gb = var.qdrant_disk_size_gb
+  disk_type    = var.qdrant_disk_type
+
+  depends_on = [google_project_service.phase3]
+}

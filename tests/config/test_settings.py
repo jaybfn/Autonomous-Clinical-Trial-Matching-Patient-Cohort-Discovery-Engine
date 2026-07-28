@@ -40,6 +40,8 @@ def test_settings_defaults_are_non_secret(monkeypatch: pytest.MonkeyPatch) -> No
     assert settings.agent_read_role == "AGENT_READ_ROLE"
     assert settings.audit_write_role == "AUDIT_WRITE_ROLE"
     assert settings.qdrant_collection == "trial_criteria"
+    assert settings.embedding_provider == "deterministic"
+    assert settings.embedding_dimension == 768
 
 
 def test_settings_otel_defaults(monkeypatch: pytest.MonkeyPatch) -> None:
