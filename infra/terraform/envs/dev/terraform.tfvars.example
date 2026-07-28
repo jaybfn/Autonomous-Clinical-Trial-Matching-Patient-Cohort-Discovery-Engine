@@ -18,3 +18,16 @@ gke_deletion_protection = false
 artifact_repository_id  = "trialmatch-docker"
 ksa_name                = "trialmatch-ksa"
 ksa_namespace           = "trialmatch"
+
+clinical_topic_name        = "clinical-records"
+lab_topic_name             = "lab-updates"
+clinical_subscription_name = "clinical-records-sub"
+lab_subscription_name      = "lab-updates-sub"
+
+secret_ids = [
+  "trialmatch-snowflake-private-key",
+  "trialmatch-snowflake-passphrase",
+]
+
+ingress_address_name = "trialmatch-ingress-ip"
+ingress_domain       = ""

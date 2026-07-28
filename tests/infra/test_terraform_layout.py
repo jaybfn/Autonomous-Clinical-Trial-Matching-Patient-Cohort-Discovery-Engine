@@ -29,6 +29,9 @@ def test_required_modules_exist() -> None:
         "artifact_registry",
         "iam",
         "workload_identity",
+        "pubsub",
+        "ingress",
+        "secret_manager",
     )
     for module in modules:
         module_dir = TF_ROOT / "modules" / module
