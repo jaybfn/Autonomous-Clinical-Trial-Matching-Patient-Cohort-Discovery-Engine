@@ -1,0 +1,16 @@
+# Example dbt profile — copy to ~/.dbt/profiles.yml (never commit secrets).
+# Private key path should point at a local file or a file fetched from Secret Manager.
+trialmatch:
+  target: dev
+  outputs:
+    dev:
+      type: snowflake
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+      user: "{{ env_var('SNOWFLAKE_USER') }}"
+      private_key_path: "{{ env_var('SNOWFLAKE_PRIVATE_KEY_PATH') }}"
+      role: "{{ env_var('AGENT_READ_ROLE', 'AGENT_READ_ROLE') }}"
+      database: "{{ env_var('SNOWFLAKE_DATABASE', 'TRIALMATCH_DEV') }}"
+      warehouse: "{{ env_var('SNOWFLAKE_WAREHOUSE', 'TRIALMATCH_WH') }}"
+      schema: STAGING
+      threads: 4
+      client_session_keep_alive: False

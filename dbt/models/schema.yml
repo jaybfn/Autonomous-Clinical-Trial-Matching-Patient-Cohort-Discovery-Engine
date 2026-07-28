@@ -1,0 +1,51 @@
+version: 2
+
+sources:
+  - name: raw
+    database: TRIALMATCH_DEV
+    schema: RAW
+    tables:
+      - name: raw_synthea_patients
+      - name: raw_synthea_labs
+      - name: raw_synthea_conditions
+      - name: raw_synthea_encounters
+
+  - name: audit
+    database: TRIALMATCH_DEV
+    schema: AUDIT
+    tables:
+      - name: audit_match_justifications
+
+models:
+  - name: stg_patients
+    columns:
+      - name: patient_id
+        tests: [not_null, unique]
+
+  - name: stg_conditions
+    columns:
+      - name: patient_id
+        tests: [not_null]
+      - name: condition_code
+        tests: [not_null]
+
+  - name: stg_labs
+    columns:
+      - name: patient_id
+        tests: [not_null]
+      - name: lab_code
+        tests: [not_null]
+
+  - name: fct_patient_history
+    columns:
+      - name: patient_id
+        tests: [not_null]
+
+  - name: dim_trial_eligibility_features
+    columns:
+      - name: patient_id
+        tests: [not_null]
+      - name: feature_type
+        tests: [not_null]
+      - name: feature_code
+        tests: [not_null]
