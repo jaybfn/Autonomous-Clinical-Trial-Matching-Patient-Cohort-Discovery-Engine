@@ -32,6 +32,7 @@ def test_required_modules_exist() -> None:
         "pubsub",
         "ingress",
         "secret_manager",
+        "qdrant_disk",
     )
     for module in modules:
         module_dir = TF_ROOT / "modules" / module

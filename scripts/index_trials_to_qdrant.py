@@ -1,4 +1,8 @@
-"""Index ClinicalTrials.gov eligibility documents into Qdrant (clients injected)."""
+"""Index ClinicalTrials.gov eligibility documents into Qdrant.
+
+Dry-run (default) uses the deterministic embedder and does not contact Qdrant.
+Live mode: set --live and configure QDRANT_URL / EMBEDDING_* env vars.
+"""
 
 from __future__ import annotations
 
@@ -6,11 +10,10 @@ import argparse
 from pathlib import Path
 from typing import Protocol
 
+from trialmatch.config.settings import Settings
 from trialmatch.data.clinicaltrials_mapper import map_eligibility_record, read_eligibility_jsonl
-
-
-class Embedder(Protocol):
-    def embed(self, text: str) -> list[float]: ...
+from trialmatch.services.embeddings import Embedder, build_embedder
+from trialmatch.services.trial_indexer import TrialIndexer
 
 
 class QdrantClient(Protocol):
@@ -25,6 +28,7 @@ def index_trials_to_qdrant(
     collection: str = "trial_criteria",
     dry_run: bool = False,
 ) -> dict[str, int]:
+    """Legacy script helper used by Phase 0.5 tests — upserts via injected client."""
     points: list[dict] = []
     for record in read_eligibility_jsonl(sample_path):
         doc = map_eligibility_record(record)
@@ -42,7 +46,6 @@ def index_trials_to_qdrant(
                 },
             }
         )
-
     if not dry_run and points:
         qdrant.upsert(collection, points)
     return {"indexed": len(points)}
@@ -55,25 +58,53 @@ def main(argv: list[str] | None = None) -> int:
         type=Path,
         default=Path("data/clinicaltrials/samples/eligibility.jsonl"),
     )
-    parser.add_argument("--collection", default="trial_criteria")
-    parser.add_argument("--dry-run", action="store_true", default=True)
+    parser.add_argument("--collection", default=None)
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        default=True,
+        help="Embed + count only (default).",
+    )
+    parser.add_argument(
+        "--live",
+        action="store_true",
+        help="Ensure collection and upsert into Qdrant (requires qdrant-client).",
+    )
     args = parser.parse_args(argv)
 
-    class _HashEmbedder:
-        def embed(self, text: str) -> list[float]:
-            return [float(len(text) % 7), 1.0, 0.0]
+    dry_run = not args.live
+    # Dry-run works without a full .env; live mode still requires real project ADC.
+    import os
 
-    class _NoopQdrant:
-        def upsert(self, collection: str, points: list[dict]) -> int:
-            raise RuntimeError("Live Qdrant upsert requires Phase 6 client")
+    os.environ.setdefault("GCP_PROJECT_ID", "autonomous-agent-503517")
 
-    summary = index_trials_to_qdrant(
-        sample_path=args.sample_path,
-        embedder=_HashEmbedder(),
-        qdrant=_NoopQdrant(),
-        collection=args.collection,
-        dry_run=True,
+    settings = Settings(_env_file=None)
+    if args.collection:
+        settings = settings.model_copy(update={"qdrant_collection": args.collection})
+
+    embedder = build_embedder(settings)
+
+    if dry_run:
+
+        class _NoopStore:
+            def ensure_collection(self, vector_size: int) -> None:
+                return None
+
+            def upsert(self, points: list[dict]) -> int:
+                return 0
+
+        store: object = _NoopStore()
+    else:
+        from trialmatch.adapters.qdrant_client import QdrantVectorStore
+
+        store = QdrantVectorStore(settings=settings)
+
+    indexer = TrialIndexer(
+        embedder=embedder,
+        store=store,  # type: ignore[arg-type]
+        collection=settings.qdrant_collection,
     )
+    summary = indexer.index_jsonl(args.sample_path, dry_run=dry_run)
     print(summary)
     return 0
 

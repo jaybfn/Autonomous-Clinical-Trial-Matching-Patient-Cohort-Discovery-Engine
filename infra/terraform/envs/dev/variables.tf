@@ -137,3 +137,27 @@ variable "ingress_domain" {
   type        = string
   default     = ""
 }
+
+variable "qdrant_disk_name" {
+  description = "Persistent disk for in-cluster Qdrant"
+  type        = string
+  default     = "trialmatch-qdrant-data"
+}
+
+variable "qdrant_disk_zone" {
+  description = "Zone for Qdrant disk (pick a GKE node zone)"
+  type        = string
+  default     = "us-central1-a"
+}
+
+variable "qdrant_disk_size_gb" {
+  description = "Qdrant disk size GB"
+  type        = number
+  default     = 20
+}
+
+variable "qdrant_disk_type" {
+  description = "Qdrant disk type"
+  type        = string
+  default     = "pd-standard"
+}

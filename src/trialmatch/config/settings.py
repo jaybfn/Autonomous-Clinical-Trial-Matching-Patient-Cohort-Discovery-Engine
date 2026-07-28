@@ -23,6 +23,11 @@ class Settings(BaseSettings):
     qdrant_url: str = Field(default="http://localhost:6333", alias="QDRANT_URL")
     qdrant_collection: str = Field(default="trial_criteria", alias="QDRANT_COLLECTION")
 
+    # Embeddings (Phase 6) — provider: deterministic | vertex
+    embedding_provider: str = Field(default="deterministic", alias="EMBEDDING_PROVIDER")
+    embedding_model: str = Field(default="text-embedding-004", alias="EMBEDDING_MODEL")
+    embedding_dimension: int = Field(default=768, alias="EMBEDDING_DIMENSION")
+
     snowflake_account: str = Field(default="", alias="SNOWFLAKE_ACCOUNT")
     snowflake_user: str = Field(default="", alias="SNOWFLAKE_USER")
     snowflake_warehouse: str = Field(default="", alias="SNOWFLAKE_WAREHOUSE")
