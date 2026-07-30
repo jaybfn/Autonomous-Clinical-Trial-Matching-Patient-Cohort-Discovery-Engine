@@ -47,6 +47,8 @@ def test_settings_defaults_are_non_secret(monkeypatch: pytest.MonkeyPatch) -> No
     assert settings.llm_provider == "ollama"
     assert settings.ollama_base_url == "http://localhost:11434"
     assert settings.ollama_llm_model == "llama3.1:8b"
+    assert settings.matcher_vector_limit == 10
+    assert settings.matcher_snowflake_schema == "MARTS"
 
 
 def test_settings_otel_defaults(monkeypatch: pytest.MonkeyPatch) -> None:

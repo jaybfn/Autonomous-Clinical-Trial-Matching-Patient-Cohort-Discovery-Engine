@@ -53,3 +53,7 @@ class Settings(BaseSettings):
     # Ollama (local / self-hosted) — native /api/chat, no API keys
     ollama_base_url: str = Field(default="http://localhost:11434", alias="OLLAMA_BASE_URL")
     ollama_llm_model: str = Field(default="llama3.1:8b", alias="OLLAMA_LLM_MODEL")
+
+    # Matcher (Phase 9) — Qdrant top-K + Snowflake mart schema (AGENT_READ_ROLE)
+    matcher_vector_limit: int = Field(default=10, alias="MATCHER_VECTOR_LIMIT")
+    matcher_snowflake_schema: str = Field(default="MARTS", alias="MATCHER_SNOWFLAKE_SCHEMA")
