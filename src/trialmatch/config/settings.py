@@ -44,3 +44,12 @@ class Settings(BaseSettings):
     # OpenTelemetry (Phase 1.5) — empty OTLP endpoint means no remote export
     otel_service_name: str = Field(default="trialmatch", alias="OTEL_SERVICE_NAME")
     otel_exporter_otlp_endpoint: str = Field(default="", alias="OTEL_EXPORTER_OTLP_ENDPOINT")
+
+    # LLM provider for Parser (Phase 8): ollama (local, $0 tokens) | vertex (ADC)
+    llm_provider: str = Field(default="ollama", alias="LLM_PROVIDER")
+    # Vertex LLM — ADC / Workload Identity only; never API keys
+    vertex_llm_model: str = Field(default="gemini-2.0-flash-001", alias="VERTEX_LLM_MODEL")
+    vertex_llm_location: str = Field(default="us-central1", alias="VERTEX_LLM_LOCATION")
+    # Ollama (local / self-hosted) — native /api/chat, no API keys
+    ollama_base_url: str = Field(default="http://localhost:11434", alias="OLLAMA_BASE_URL")
+    ollama_llm_model: str = Field(default="llama3.1:8b", alias="OLLAMA_LLM_MODEL")
