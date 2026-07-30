@@ -42,6 +42,11 @@ def test_settings_defaults_are_non_secret(monkeypatch: pytest.MonkeyPatch) -> No
     assert settings.qdrant_collection == "trial_criteria"
     assert settings.embedding_provider == "deterministic"
     assert settings.embedding_dimension == 768
+    assert settings.vertex_llm_model == "gemini-2.0-flash-001"
+    assert settings.vertex_llm_location == "us-central1"
+    assert settings.llm_provider == "ollama"
+    assert settings.ollama_base_url == "http://localhost:11434"
+    assert settings.ollama_llm_model == "llama3.1:8b"
 
 
 def test_settings_otel_defaults(monkeypatch: pytest.MonkeyPatch) -> None:

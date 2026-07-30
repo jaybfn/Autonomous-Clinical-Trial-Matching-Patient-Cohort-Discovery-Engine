@@ -60,7 +60,8 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 | 5 Snowflake RBAC, Network Policy & dbt | Complete |
 | 6 Qdrant Vector Store & Embeddings | Complete |
 | 7 Agent 1: Compliance (PII Scrub) | Complete |
-| 8–14 | Planned |
+| 8 Agent 2: Parser (Clinical Feature Extraction) | Complete |
+| 9–14 | Planned |
 
 ## Deployed infra outputs (dev)
 
