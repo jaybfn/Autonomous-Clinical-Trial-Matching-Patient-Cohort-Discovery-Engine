@@ -1,0 +1,10 @@
+# Default reviewers for TrialMatch (Phase 13).
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+*       @jaybfn
+
+# Infra / security-sensitive paths
+/infra/                 @jaybfn
+/.github/               @jaybfn
+/snowflake/             @jaybfn
+/k8s/                   @jaybfn

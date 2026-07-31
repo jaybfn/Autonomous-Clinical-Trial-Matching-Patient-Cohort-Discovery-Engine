@@ -108,7 +108,8 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 | 10 Agent 4: Auditor (Justifications & Audit Logs) | Complete |
 | 11 LangGraph Orchestrator + FastAPI | Complete |
 | 12 Ingestion (Pub/Sub → Orchestrator) | Complete |
-| 13–14 | Planned |
+| 13 CI/CD (GitHub Actions) | Complete |
+| 14 | Planned |
 
 ## Deployed infra outputs (dev)
 
