@@ -27,7 +27,14 @@ resource "google_container_cluster" "this" {
   }
 
   master_authorized_networks_config {
-    # Private endpoint only — access via IAP / bastion / connected VPC later.
+    # Private endpoint: only listed CIDRs (bastion subnet) may reach the API server.
+    dynamic "cidr_blocks" {
+      for_each = var.master_authorized_cidrs
+      content {
+        cidr_block   = cidr_blocks.value.cidr_block
+        display_name = cidr_blocks.value.display_name
+      }
+    }
   }
 
   workload_identity_config {

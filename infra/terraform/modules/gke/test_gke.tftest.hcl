@@ -10,6 +10,12 @@ variables {
   network_self_link          = "projects/autonomous-agent-503517/global/networks/trialmatch-vpc"
   subnet_self_link           = "projects/autonomous-agent-503517/regions/us-central1/subnetworks/trialmatch-private"
   node_service_account_email = "trialmatch-nodes@autonomous-agent-503517.iam.gserviceaccount.com"
+  master_authorized_cidrs = [
+    {
+      cidr_block   = "10.10.0.0/20"
+      display_name = "trialmatch-private-subnet"
+    }
+  ]
 }
 
 run "plan_private_cluster_with_workload_identity" {
@@ -33,5 +39,10 @@ run "plan_private_cluster_with_workload_identity" {
   assert {
     condition     = google_container_cluster.this.workload_identity_config[0].workload_pool == "autonomous-agent-503517.svc.id.goog"
     error_message = "Workload Identity pool must be enabled"
+  }
+
+  assert {
+    condition     = length(google_container_cluster.this.master_authorized_networks_config[0].cidr_blocks) == 1
+    error_message = "Private master must authorize the bastion/private subnet CIDR"
   }
 }

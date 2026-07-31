@@ -31,3 +31,12 @@ secret_ids = [
 
 ingress_address_name = "trialmatch-ingress-ip"
 ingress_domain       = ""
+
+# Private bastion + IAP (required for kubectl from outside the VPC)
+bastion_name         = "trialmatch-bastion"
+bastion_zone         = "us-central1-a"
+bastion_machine_type = "e2-micro"
+# Replace with your Google account(s):
+bastion_iap_members = [
+  "user:YOU@example.com",
+]

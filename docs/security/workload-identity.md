@@ -28,6 +28,12 @@ serviceAccount:autonomous-agent-503517.svc.id.goog[trialmatch/trialmatch-ksa]
 Manifest: `k8s/serviceaccounts/trialmatch-ksa.yaml`
 IaC: `infra/terraform/modules/workload_identity`
 
+## kubectl access (private control plane)
+
+The GKE API (`172.16.0.2`) is not reachable from laptops. Use the **IAP bastion**:
+
+See [Bastion access runbook](../runbooks/bastion-access.md).
+
 ## Verification
 
 ```bash

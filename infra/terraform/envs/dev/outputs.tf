@@ -117,3 +117,23 @@ output "qdrant_disk_zone" {
   description = "Zone of the Qdrant persistent disk"
   value       = module.qdrant_disk.zone
 }
+
+output "bastion_name" {
+  description = "Private bastion VM name"
+  value       = module.bastion.instance_name
+}
+
+output "bastion_zone" {
+  description = "Bastion zone"
+  value       = module.bastion.zone
+}
+
+output "bastion_internal_ip" {
+  description = "Bastion private IP"
+  value       = module.bastion.internal_ip
+}
+
+output "bastion_iap_ssh_command" {
+  description = "SSH to bastion through IAP (from laptop / Dev Container)"
+  value       = module.bastion.iap_ssh_command
+}
