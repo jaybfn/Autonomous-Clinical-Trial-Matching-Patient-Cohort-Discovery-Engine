@@ -49,6 +49,7 @@ def test_settings_defaults_are_non_secret(monkeypatch: pytest.MonkeyPatch) -> No
     assert settings.ollama_llm_model == "llama3.1:8b"
     assert settings.matcher_vector_limit == 10
     assert settings.matcher_snowflake_schema == "MARTS"
+    assert settings.auditor_snowflake_schema == "AUDIT"
 
 
 def test_settings_otel_defaults(monkeypatch: pytest.MonkeyPatch) -> None:

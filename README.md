@@ -62,7 +62,8 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 | 7 Agent 1: Compliance (PII Scrub) | Complete |
 | 8 Agent 2: Parser (Clinical Feature Extraction) | Complete |
 | 9 Agent 3: Matcher (Snowflake + Qdrant Hybrid) | Complete |
-| 10–14 | Planned |
+| 10 Agent 4: Auditor (Justifications & Audit Logs) | Complete |
+| 11–14 | Planned |
 
 ## Deployed infra outputs (dev)
 
