@@ -2,15 +2,124 @@
 
 Enterprise event-driven system for clinical trial matching and patient cohort discovery on **GCP** and **Snowflake**, with multi-agent workers (LangGraph) on Private GKE.
 
-## Architecture (high level)
+## System architecture
 
-- **Ingestion:** GCP Pub/Sub clinical record / lab update events (Synthea-shaped producers)
-- **Compute:** FastAPI + LangGraph agents on Private GKE (Workload Identity)
-- **Warehouse / vectors:** Snowflake (dbt) + Qdrant
-- **Primary datasets:** Synthea (synthetic EPR) + ClinicalTrials.gov (eligibility text)
-- **Observability:** OpenTelemetry (PHI-safe spans) → optional OTLP; see [docs/](docs/)
-- **GCP project:** `autonomous-agent-503517` via env `GCP_PROJECT_ID` (see `.env.example`)
-- **IaC:** Terraform (VPC, NAT, GKE, Pub/Sub, IAM)
+End-to-end view of every major component (data → ingress → agents → stores → ops).
+
+```mermaid
+flowchart TB
+  subgraph sources [Data sources]
+    SYN[Synthea samples<br/>notes / labs / conditions]
+    CTG[ClinicalTrials.gov<br/>eligibility JSONL]
+    PUBLISH[publish_synthea_events.py]
+    INDEX[index_trials_to_qdrant.py]
+  end
+
+  subgraph gcp [GCP project autonomous-agent-503517]
+    subgraph net [Networking — Terraform]
+      VPC[VPC + Private subnets]
+      NAT[Cloud NAT<br/>136.112.132.174<br/>34.61.252.214]
+      FW[Firewall]
+    end
+
+    subgraph messaging [Pub/Sub]
+      T_CLIN[(clinical-records)]
+      T_LAB[(lab-updates)]
+      DLQ_C[(clinical-records-dlq)]
+      DLQ_L[(lab-updates-dlq)]
+      SUB_C[clinical-records-sub]
+      SUB_L[lab-updates-sub]
+    end
+
+    subgraph gke [Private GKE — trialmatch-gke]
+      KSA[KSA trialmatch-ksa<br/>Workload Identity]
+      ING_API[Ingress / static IP]
+      API[FastAPI trialmatch-api<br/>/healthz /readyz /v1/match /docs]
+      WORKER[Ingestion worker<br/>subscriber.py]
+      QDR[(Qdrant<br/>trial_criteria)]
+
+      subgraph graph [LangGraph orchestrator]
+        C[1 Compliance<br/>PII scrub]
+        P[2 Parser<br/>clinical features]
+        M[3 Matcher<br/>hybrid rank]
+        A[4 Auditor<br/>justifications]
+        C --> P --> M --> A
+      end
+    end
+
+    AR[(Artifact Registry<br/>trialmatch-docker)]
+    SM[Secret Manager<br/>Snowflake key path]
+    GSA[GSA trialmatch-runtime]
+  end
+
+  subgraph llm [LLM providers]
+    OLLAMA[Ollama — local / free]
+    VERTEX[Vertex Gemini — ADC]
+  end
+
+  subgraph snowflake [Snowflake TRIALMATCH_DEV]
+    RAW[(RAW Synthea landing)]
+    STG[(STAGING — dbt)]
+    MARTS[(MARTS<br/>AGENT_READ_ROLE)]
+    AUDIT[(AUDIT<br/>AUDIT_WRITE_ROLE)]
+  end
+
+  subgraph obs [Observability and CI]
+    OTEL[OpenTelemetry<br/>PHI-safe spans]
+    OTLP[OTLP exporter — optional]
+    GHA[GitHub Actions<br/>Ruff · Pytest · TF validate]
+    DOCS[docs/ architecture<br/>runbooks · WI]
+  end
+
+  SYN --> PUBLISH --> T_CLIN
+  SYN --> PUBLISH --> T_LAB
+  CTG --> INDEX --> QDR
+  T_CLIN --> SUB_C --> WORKER
+  T_LAB --> SUB_L --> WORKER
+  WORKER -->|poison| DLQ_C
+  WORKER -->|poison| DLQ_L
+
+  ING_API --> API
+  API --> graph
+  WORKER --> graph
+  KSA --> GSA
+  API --> KSA
+  WORKER --> KSA
+  AR -.->|image| API
+  AR -.->|image| WORKER
+
+  P -.-> OLLAMA
+  P -.-> VERTEX
+  M --> QDR
+  M -->|SELECT| MARTS
+  A -->|INSERT| AUDIT
+  RAW --> STG --> MARTS
+  SM -.->|key path only| MARTS
+  NAT --> snowflake
+
+  API --> OTEL
+  WORKER --> OTEL
+  graph --> OTEL
+  OTEL --> OTLP
+  GHA --> AR
+  DOCS --- gke
+```
+
+### Component map
+
+| Layer | Components |
+|-------|------------|
+| **Sources** | Synthea samples, ClinicalTrials.gov eligibility, publisher + indexer scripts |
+| **Ingress paths** | FastAPI (`POST /v1/match`) and Pub/Sub → ingestion worker (same LangGraph) |
+| **Agents** | Compliance → Parser → Matcher → Auditor (fail-closed) |
+| **LLM** | Ollama (default, $0 tokens) or Vertex Gemini (ADC / Workload Identity) |
+| **Vectors** | In-cluster Qdrant (`trial_criteria`) |
+| **Warehouse** | Snowflake RAW → dbt STAGING/MARTS; AUDIT append-only |
+| **Identity** | `trialmatch-ksa` → `trialmatch-runtime@…` (no SA JSON keys) |
+| **Platform** | VPC, NAT, firewall, private GKE, Artifact Registry, Secret Manager, Ingress |
+| **Ops** | OpenTelemetry (allowlisted attrs), GitHub Actions CI, tracked `docs/` |
+
+More detail: [docs/architecture.md](docs/architecture.md) · [docs/security/workload-identity.md](docs/security/workload-identity.md)
 
 ## LangGraph agent pipeline
 

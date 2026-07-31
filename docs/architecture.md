@@ -13,7 +13,108 @@ Match synthetic/EPR clinical notes to ClinicalTrials.gov-style eligibility using
 | **Synthea** | Synthetic patients, labs, conditions, clinical notes (dev/prototype) |
 | **ClinicalTrials.gov** | Trial eligibility text → Qdrant vectors |
 
-## Runtime pipeline
+## Full system diagram
+
+```mermaid
+flowchart TB
+  subgraph sources [Data sources]
+    SYN[Synthea samples<br/>notes / labs / conditions]
+    CTG[ClinicalTrials.gov<br/>eligibility JSONL]
+    PUBLISH[publish_synthea_events.py]
+    INDEX[index_trials_to_qdrant.py]
+  end
+
+  subgraph gcp [GCP project autonomous-agent-503517]
+    subgraph net [Networking — Terraform]
+      VPC[VPC + Private subnets]
+      NAT[Cloud NAT<br/>136.112.132.174<br/>34.61.252.214]
+      FW[Firewall]
+    end
+
+    subgraph messaging [Pub/Sub]
+      T_CLIN[(clinical-records)]
+      T_LAB[(lab-updates)]
+      DLQ_C[(clinical-records-dlq)]
+      DLQ_L[(lab-updates-dlq)]
+      SUB_C[clinical-records-sub]
+      SUB_L[lab-updates-sub]
+    end
+
+    subgraph gke [Private GKE — trialmatch-gke]
+      KSA[KSA trialmatch-ksa<br/>Workload Identity]
+      ING_API[Ingress / static IP]
+      API[FastAPI trialmatch-api<br/>/healthz /readyz /v1/match /docs]
+      WORKER[Ingestion worker<br/>subscriber.py]
+      QDR[(Qdrant<br/>trial_criteria)]
+
+      subgraph graph [LangGraph orchestrator]
+        C[1 Compliance<br/>PII scrub]
+        P[2 Parser<br/>clinical features]
+        M[3 Matcher<br/>hybrid rank]
+        A[4 Auditor<br/>justifications]
+        C --> P --> M --> A
+      end
+    end
+
+    AR[(Artifact Registry<br/>trialmatch-docker)]
+    SM[Secret Manager<br/>Snowflake key path]
+    GSA[GSA trialmatch-runtime]
+  end
+
+  subgraph llm [LLM providers]
+    OLLAMA[Ollama — local / free]
+    VERTEX[Vertex Gemini — ADC]
+  end
+
+  subgraph snowflake [Snowflake TRIALMATCH_DEV]
+    RAW[(RAW Synthea landing)]
+    STG[(STAGING — dbt)]
+    MARTS[(MARTS<br/>AGENT_READ_ROLE)]
+    AUDIT[(AUDIT<br/>AUDIT_WRITE_ROLE)]
+  end
+
+  subgraph obs [Observability and CI]
+    OTEL[OpenTelemetry<br/>PHI-safe spans]
+    OTLP[OTLP exporter — optional]
+    GHA[GitHub Actions<br/>Ruff · Pytest · TF validate]
+    DOCS[docs/ architecture<br/>runbooks · WI]
+  end
+
+  SYN --> PUBLISH --> T_CLIN
+  SYN --> PUBLISH --> T_LAB
+  CTG --> INDEX --> QDR
+  T_CLIN --> SUB_C --> WORKER
+  T_LAB --> SUB_L --> WORKER
+  WORKER -->|poison| DLQ_C
+  WORKER -->|poison| DLQ_L
+
+  ING_API --> API
+  API --> graph
+  WORKER --> graph
+  KSA --> GSA
+  API --> KSA
+  WORKER --> KSA
+  AR -.->|image| API
+  AR -.->|image| WORKER
+
+  P -.-> OLLAMA
+  P -.-> VERTEX
+  M --> QDR
+  M -->|SELECT| MARTS
+  A -->|INSERT| AUDIT
+  RAW --> STG --> MARTS
+  SM -.->|key path only| MARTS
+  NAT --> snowflake
+
+  API --> OTEL
+  WORKER --> OTEL
+  graph --> OTEL
+  OTEL --> OTLP
+  GHA --> AR
+  DOCS --- gke
+```
+
+## Runtime pipeline (compact)
 
 ```text
 Pub/Sub (clinical-records) ──► Ingestion worker
