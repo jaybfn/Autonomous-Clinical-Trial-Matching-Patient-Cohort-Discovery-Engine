@@ -60,3 +60,7 @@ class Settings(BaseSettings):
 
     # Auditor (Phase 10) — append-only AUDIT schema (AUDIT_WRITE_ROLE)
     auditor_snowflake_schema: str = Field(default="AUDIT", alias="AUDITOR_SNOWFLAKE_SCHEMA")
+
+    # API (Phase 11)
+    api_host: str = Field(default="0.0.0.0", alias="API_HOST")  # noqa: S104
+    api_port: int = Field(default=8080, alias="API_PORT")

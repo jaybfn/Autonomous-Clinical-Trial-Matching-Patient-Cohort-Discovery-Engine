@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trialmatch-api
+  namespace: trialmatch
+  labels:
+    app.kubernetes.io/name: trialmatch-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: trialmatch-api
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: trialmatch-api
+    spec:
+      serviceAccountName: trialmatch-ksa
+      containers:
+        - name: api
+          image: us-central1-docker.pkg.dev/autonomous-agent-503517/trialmatch-docker/trialmatch-api:0.1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: GCP_PROJECT_ID
+              value: autonomous-agent-503517
+            - name: ENVIRONMENT
+              value: dev
+            - name: LOG_LEVEL
+              value: INFO
+            - name: OTEL_SERVICE_NAME
+              value: trialmatch-api
+            - name: QDRANT_URL
+              value: http://qdrant.trialmatch.svc.cluster.local:6333
+            - name: LLM_PROVIDER
+              value: ollama
+            - name: EMBEDDING_PROVIDER
+              value: deterministic
+            - name: API_HOST
+              value: "0.0.0.0"
+            - name: API_PORT
+              value: "8080"
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi

@@ -12,6 +12,49 @@ Enterprise event-driven system for clinical trial matching and patient cohort di
 - **GCP project:** `autonomous-agent-503517` via env `GCP_PROJECT_ID` (see `.env.example`)
 - **IaC:** Terraform (VPC, NAT, GKE, Pub/Sub, IAM)
 
+## LangGraph agent pipeline
+
+Locked graph order used by FastAPI `POST /v1/match` (and later Pub/Sub ingestion). Any node failure sets `status=failed` and short-circuits to **END** (fail-closed).
+
+```mermaid
+flowchart TD
+  START([START]) --> C[Compliance<br/>PII scrub]
+  C -->|ok| P[Parser<br/>clinical features]
+  C -->|error| FAIL([END failed])
+  P -->|ok| M[Matcher<br/>Qdrant + Snowflake]
+  P -->|error| FAIL
+  M -->|ok| A[Auditor<br/>justification + audit write]
+  M -->|error| FAIL
+  A --> OK([END ok])
+
+  subgraph inputs [Inputs]
+    NOTE[note_text + patient_id<br/>correlation_id]
+  end
+
+  subgraph stores [Backends]
+    LLM[Ollama / Vertex LLM]
+    QDR[(Qdrant<br/>trial vectors)]
+    SF[(Snowflake<br/>MARTS read / AUDIT write)]
+  end
+
+  NOTE --> C
+  P -.-> LLM
+  M -.-> QDR
+  M -.-> SF
+  A -.-> SF
+```
+
+| Node | Agent | Role |
+|------|--------|------|
+| **Compliance** | Agent 1 | Scrub PHI → `scrubbed_text`, `content_hash`, redaction tokens |
+| **Parser** | Agent 2 | LLM JSON → validated `PatientFeatures` |
+| **Matcher** | Agent 3 | Hybrid rank trials (`AGENT_READ_ROLE` only) |
+| **Auditor** | Agent 4 | PII-free justification → `AUDIT_WRITE_ROLE` append-only rows |
+
+```text
+Clinical note → Compliance → Parser → Matcher → Auditor → ranked matches + audit record
+```
+
 ## Local development
 
 ### Prerequisites
@@ -63,7 +106,8 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 | 8 Agent 2: Parser (Clinical Feature Extraction) | Complete |
 | 9 Agent 3: Matcher (Snowflake + Qdrant Hybrid) | Complete |
 | 10 Agent 4: Auditor (Justifications & Audit Logs) | Complete |
-| 11–14 | Planned |
+| 11 LangGraph Orchestrator + FastAPI | Complete |
+| 12–14 | Planned |
 
 ## Deployed infra outputs (dev)
 

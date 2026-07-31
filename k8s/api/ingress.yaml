@@ -1,0 +1,18 @@
+# Re-export / canonical path for Phase 11 (same contract as k8s/ingress/).
+# Static IP name must match terraform output `ingress_static_ip_name`.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: trialmatch-api
+  namespace: trialmatch
+  annotations:
+    kubernetes.kubernetes.io/ingress.global-static-ip-name: trialmatch-ingress-ip
+    kubernetes.kubernetes.io/ingress.class: "gce"
+  labels:
+    app.kubernetes.io/name: trialmatch-api
+spec:
+  defaultBackend:
+    service:
+      name: trialmatch-api
+      port:
+        number: 80
