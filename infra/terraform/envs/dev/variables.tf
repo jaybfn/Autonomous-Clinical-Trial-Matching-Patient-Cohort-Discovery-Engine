@@ -161,3 +161,27 @@ variable "qdrant_disk_type" {
   type        = string
   default     = "pd-standard"
 }
+
+variable "bastion_name" {
+  description = "Private IAP bastion VM name"
+  type        = string
+  default     = "trialmatch-bastion"
+}
+
+variable "bastion_zone" {
+  description = "Zone for the bastion VM"
+  type        = string
+  default     = "us-central1-a"
+}
+
+variable "bastion_machine_type" {
+  description = "Bastion machine type"
+  type        = string
+  default     = "e2-micro"
+}
+
+variable "bastion_iap_members" {
+  description = "Principals allowed to IAP-SSH to the bastion (user:you@domain.com)"
+  type        = list(string)
+  default     = []
+}

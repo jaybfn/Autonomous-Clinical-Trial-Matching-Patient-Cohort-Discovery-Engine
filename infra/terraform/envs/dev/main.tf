@@ -35,6 +35,8 @@ resource "google_project_service" "phase3" {
     "pubsub.googleapis.com",
     "secretmanager.googleapis.com",
     "compute.googleapis.com",
+    "iap.googleapis.com",
+    "oslogin.googleapis.com",
   ])
 
   project            = var.project_id
@@ -90,12 +92,39 @@ module "gke" {
   disk_type                  = var.gke_disk_type
   node_service_account_email = module.iam.node_gsa_email
   deletion_protection        = var.gke_deletion_protection
+  # Bastion lives in this subnet — required for private control-plane access.
+  master_authorized_cidrs = [
+    {
+      cidr_block   = var.subnet_cidr
+      display_name = "trialmatch-private-subnet-bastion"
+    }
+  ]
 
   depends_on = [
     google_project_service.phase3,
     module.cloud_nat,
     module.firewall,
     module.iam,
+  ]
+}
+
+module "bastion" {
+  source = "../../modules/bastion"
+
+  project_id        = var.project_id
+  region            = var.region
+  zone              = var.bastion_zone
+  network_self_link = module.vpc.network_self_link
+  subnet_self_link  = module.vpc.private_subnet_self_link
+  name              = var.bastion_name
+  machine_type      = var.bastion_machine_type
+  iap_members       = var.bastion_iap_members
+
+  depends_on = [
+    google_project_service.phase3,
+    module.cloud_nat,
+    module.firewall,
+    module.gke,
   ]
 }
 

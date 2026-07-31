@@ -1,7 +1,10 @@
-.PHONY: help install test lint format bootstrap pre-commit-install pre-commit
+.PHONY: help install test lint format bootstrap pre-commit-install pre-commit bastion-ssh bastion
 
 help:
-	@echo "Targets: bootstrap install test lint format pre-commit-install pre-commit"
+	@echo "Targets: bootstrap install test lint format pre-commit-install pre-commit bastion-ssh"
+
+bastion-ssh bastion:
+	@./scripts/bastion-ssh.sh
 
 bootstrap: install pre-commit-install
 

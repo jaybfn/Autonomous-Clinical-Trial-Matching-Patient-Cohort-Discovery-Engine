@@ -226,7 +226,7 @@ Captured from `terraform apply` in `infra/terraform/envs/dev` (project `autonomo
 
 | Output | Value |
 |--------|--------|
-| Cluster | `trialmatch-gke` (private endpoint `172.16.0.2`) |
+| Cluster | `trialmatch-gke` (private endpoint `172.16.0.2`; access via [IAP bastion](docs/runbooks/bastion-access.md)) |
 | Registry | `us-central1-docker.pkg.dev/autonomous-agent-503517/trialmatch-docker` |
 | Runtime GSA / KSA annotation | `trialmatch-runtime@autonomous-agent-503517.iam.gserviceaccount.com` |
 | NAT IPs (Snowflake later) | `136.112.132.174`, `34.61.252.214` |

@@ -87,3 +87,12 @@ variable "deletion_protection" {
   type        = bool
   default     = false
 }
+
+variable "master_authorized_cidrs" {
+  description = "CIDRs allowed to reach the private control plane (e.g. bastion subnet)"
+  type = list(object({
+    cidr_block   = string
+    display_name = string
+  }))
+  default = []
+}
