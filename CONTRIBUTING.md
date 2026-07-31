@@ -29,7 +29,7 @@ make pre-commit
 |------|-----------|-----|
 | **Every commit** | Ruff lint/format, Terraform `fmt`, trailing whitespace, YAML/JSON/TOML, merge-conflict markers, large files, private-key detect | Fast; catches style & secret foot-guns before review |
 | **Every push** | `pytest` | Full unit suite; keeps TDD “red” commits allowed locally |
-| **CI (Phase 13)** | Same checks again | Enforce even if someone skips hooks with `--no-verify` |
+| **CI (Phase 13)** | GitHub Actions: Ruff, Pytest, Terraform fmt/validate | Enforce even if someone skips hooks with `--no-verify` |
 
 Copy `.env.example` → `.env` and keep `GCP_PROJECT_ID=autonomous-agent-503517`.
 
