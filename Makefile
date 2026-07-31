@@ -4,7 +4,7 @@ help:
 	@echo "Targets: bootstrap install test lint format pre-commit-install pre-commit bastion-ssh"
 
 bastion-ssh bastion:
-	@./scripts/bastion-ssh.sh
+	@bash scripts/bastion-ssh.sh
 
 bootstrap: install pre-commit-install
 

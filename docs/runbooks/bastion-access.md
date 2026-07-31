@@ -19,7 +19,7 @@ From the repo root (simplest):
 ```bash
 make bastion-ssh
 # aliases: make bastion
-# or:      ./scripts/bastion-ssh.sh
+# or:      bash scripts/bastion-ssh.sh
 ```
 
 Equivalents:
