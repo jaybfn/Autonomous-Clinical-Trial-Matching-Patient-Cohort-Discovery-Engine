@@ -57,3 +57,6 @@ class Settings(BaseSettings):
     # Matcher (Phase 9) — Qdrant top-K + Snowflake mart schema (AGENT_READ_ROLE)
     matcher_vector_limit: int = Field(default=10, alias="MATCHER_VECTOR_LIMIT")
     matcher_snowflake_schema: str = Field(default="MARTS", alias="MATCHER_SNOWFLAKE_SCHEMA")
+
+    # Auditor (Phase 10) — append-only AUDIT schema (AUDIT_WRITE_ROLE)
+    auditor_snowflake_schema: str = Field(default="AUDIT", alias="AUDITOR_SNOWFLAKE_SCHEMA")
