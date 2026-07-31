@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: trialmatch-api-config
+  namespace: trialmatch
+  labels:
+    app.kubernetes.io/name: trialmatch-api
+data:
+  # Non-secret Snowflake connection targets (edit account/user for your org).
+  SNOWFLAKE_ACCOUNT: ""
+  SNOWFLAKE_USER: "TRIALMATCH_APP"
+  SNOWFLAKE_WAREHOUSE: "TRIALMATCH_WH"
+  SNOWFLAKE_DATABASE: "TRIALMATCH_DEV"
+  SNOWFLAKE_SCHEMA: "MARTS"
+  MATCHER_SNOWFLAKE_SCHEMA: "MARTS"
+  AUDITOR_SNOWFLAKE_SCHEMA: "AUDIT"
+  AGENT_READ_ROLE: "AGENT_READ_ROLE"
+  AUDIT_WRITE_ROLE: "AUDIT_WRITE_ROLE"
+  # Secret Manager IDs (values uploaded out-of-band; never put PEM here).
+  SNOWFLAKE_PRIVATE_KEY_SM_ID: "trialmatch-snowflake-private-key"
+  # Set only if the PEM is encrypted AND a secret version exists:
+  # SNOWFLAKE_PRIVATE_KEY_PASSPHRASE_SM_ID: "trialmatch-snowflake-passphrase"
+  SNOWFLAKE_PRIVATE_KEY_PASSPHRASE_SM_ID: ""
+  SNOWFLAKE_PRIVATE_KEY_PATH: "/tmp/trialmatch/snowflake-private-key.pem"

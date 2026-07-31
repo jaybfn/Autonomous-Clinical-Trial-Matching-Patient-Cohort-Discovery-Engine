@@ -54,9 +54,15 @@ kubectl get nodes
 
 ## 3) Deploy TrialMatch API (from bastion)
 
+For **live** Snowflake wiring (Secret Manager + ConfigMap), see
+[snowflake-live-api.md](./snowflake-live-api.md).
+
 ```bash
 # Optional: clone repo or copy manifests
 kubectl apply -f k8s/serviceaccounts/trialmatch-ksa.yaml
+kubectl apply -f k8s/qdrant/deployment.yaml
+kubectl apply -f k8s/qdrant/service.yaml
+kubectl apply -f k8s/api/configmap.yaml
 kubectl apply -f k8s/api/deployment.yaml
 kubectl apply -f k8s/api/service.yaml
 

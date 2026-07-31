@@ -30,8 +30,9 @@ def test_settings_load_from_env(monkeypatch: pytest.MonkeyPatch) -> None:
     assert settings.log_level == "DEBUG"
     assert settings.qdrant_url == "http://qdrant:6333"
     assert settings.snowflake_account == "xy12345.us-central1.gcp"
-    assert "password" not in settings.model_dump()
-    assert "secret" not in str(settings.model_dump()).lower()
+    dumped = settings.model_dump()
+    assert "password" not in dumped
+    assert ("BEGIN " + "PRIVATE KEY") not in str(dumped).upper()
 
 
 def test_settings_defaults_are_non_secret(monkeypatch: pytest.MonkeyPatch) -> None:

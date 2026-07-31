@@ -51,6 +51,8 @@ def _connection_kwargs(settings: Settings, role: str) -> dict[str, Any]:
     }
     if settings.snowflake_private_key_path:
         kwargs["private_key_file"] = settings.snowflake_private_key_path
+    if settings.snowflake_private_key_passphrase:
+        kwargs["private_key_file_pwd"] = settings.snowflake_private_key_passphrase
     return {k: v for k, v in kwargs.items() if v is not None}
 
 
