@@ -9,16 +9,16 @@ End-to-end view of every major component (data → ingress → agents → stores
 ```mermaid
 flowchart TB
   subgraph sources [Data sources]
-    SYN[Synthea samples<br/>notes / labs / conditions]
-    CTG[ClinicalTrials.gov<br/>eligibility JSONL]
+    SYN[Synthea samples - notes labs conditions]
+    CTG[ClinicalTrials.gov eligibility JSONL]
     PUBLISH[publish_synthea_events.py]
     INDEX[index_trials_to_qdrant.py]
   end
 
   subgraph gcp [GCP project autonomous-agent-503517]
-    subgraph net [Networking — Terraform]
+    subgraph net [Networking Terraform]
       VPC[VPC + Private subnets]
-      NAT[Cloud NAT<br/>136.112.132.174<br/>34.61.252.214]
+      NAT[Cloud NAT IPs]
       FW[Firewall]
     end
 
@@ -31,44 +31,44 @@ flowchart TB
       SUB_L[lab-updates-sub]
     end
 
-    subgraph gke [Private GKE — trialmatch-gke]
-      KSA[KSA trialmatch-ksa<br/>Workload Identity]
+    subgraph gke [Private GKE trialmatch-gke]
+      KSA[KSA trialmatch-ksa Workload Identity]
       ING_API[Ingress / static IP]
-      API[FastAPI trialmatch-api<br/>/healthz /readyz /v1/match /docs]
-      WORKER[Ingestion worker<br/>subscriber.py]
-      QDR[(Qdrant<br/>trial_criteria)]
+      API[FastAPI trialmatch-api]
+      WORKER[Ingestion worker subscriber.py]
+      QDR[(Qdrant trial_criteria)]
 
-      subgraph graph [LangGraph orchestrator]
-        C[1 Compliance<br/>PII scrub]
-        P[2 Parser<br/>clinical features]
-        M[3 Matcher<br/>hybrid rank]
-        A[4 Auditor<br/>justifications]
+      subgraph orch [LangGraph orchestrator]
+        C[1 Compliance - PII scrub]
+        P[2 Parser - clinical features]
+        M[3 Matcher - hybrid rank]
+        A[4 Auditor - justifications]
         C --> P --> M --> A
       end
     end
 
-    AR[(Artifact Registry<br/>trialmatch-docker)]
-    SM[Secret Manager<br/>Snowflake key path]
+    AR[(Artifact Registry - trialmatch-docker)]
+    SM[Secret Manager - Snowflake key path]
     GSA[GSA trialmatch-runtime]
   end
 
   subgraph llm [LLM providers]
-    OLLAMA[Ollama — local / free]
-    VERTEX[Vertex Gemini — ADC]
+    OLLAMA[Ollama - local / free]
+    VERTEX[Vertex Gemini - ADC]
   end
 
-  subgraph snowflake [Snowflake TRIALMATCH_DEV]
+  subgraph sf [Snowflake TRIALMATCH_DEV]
     RAW[(RAW Synthea landing)]
-    STG[(STAGING — dbt)]
-    MARTS[(MARTS<br/>AGENT_READ_ROLE)]
-    AUDIT[(AUDIT<br/>AUDIT_WRITE_ROLE)]
+    STG[(STAGING - dbt)]
+    MARTS[(MARTS - AGENT_READ_ROLE)]
+    AUDIT[(AUDIT - AUDIT_WRITE_ROLE)]
   end
 
   subgraph obs [Observability and CI]
-    OTEL[OpenTelemetry<br/>PHI-safe spans]
-    OTLP[OTLP exporter — optional]
-    GHA[GitHub Actions<br/>Ruff · Pytest · TF validate]
-    DOCS[docs/ architecture<br/>runbooks · WI]
+    OTEL[OpenTelemetry - PHI-safe spans]
+    OTLP[OTLP exporter - optional]
+    GHA[GitHub Actions - Ruff Pytest TF]
+    DOCS[Tracked docs - architecture runbooks WI]
   end
 
   SYN --> PUBLISH --> T_CLIN
@@ -80,8 +80,8 @@ flowchart TB
   WORKER -->|poison| DLQ_L
 
   ING_API --> API
-  API --> graph
-  WORKER --> graph
+  API --> C
+  WORKER --> C
   KSA --> GSA
   API --> KSA
   WORKER --> KSA
@@ -95,14 +95,14 @@ flowchart TB
   A -->|INSERT| AUDIT
   RAW --> STG --> MARTS
   SM -.->|key path only| MARTS
-  NAT --> snowflake
+  NAT --> MARTS
 
   API --> OTEL
   WORKER --> OTEL
-  graph --> OTEL
+  A --> OTEL
   OTEL --> OTLP
   GHA --> AR
-  DOCS --- gke
+  DOCS --> OTEL
 ```
 
 ### Component map
