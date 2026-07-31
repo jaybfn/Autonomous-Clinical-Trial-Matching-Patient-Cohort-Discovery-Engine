@@ -53,22 +53,44 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--sample-dir", type=Path, default=Path("data/synthea/samples"))
     parser.add_argument("--clinical-topic", default="clinical-records")
     parser.add_argument("--lab-topic", default="lab-updates")
-    parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument(
+        "--live",
+        action="store_true",
+        help="Publish via ADC Pub/Sub (requires GCP_PROJECT_ID + trialmatch[pubsub])",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Count events without publishing (default when --live is omitted)",
+    )
     args = parser.parse_args(argv)
 
-    class _NoopPublisher:
-        def publish(self, topic: str, message: dict) -> str:
-            raise RuntimeError("Live Pub/Sub publish requires ADC client (Phase 12)")
+    dry_run = True if not args.live else bool(args.dry_run)
+    if args.live and args.dry_run:
+        dry_run = True
 
-    # CLI always dry-runs until Phase 12 ADC publisher is available.
+    if dry_run:
+
+        class _NoopPublisher:
+            def publish(self, topic: str, message: dict) -> str:
+                return "dry-run"
+
+        publisher: EventPublisher = _NoopPublisher()
+    else:
+        from trialmatch.adapters.pubsub_client import PubSubPublisher
+        from trialmatch.config.settings import Settings
+
+        publisher = PubSubPublisher(settings=Settings())
+
     summary = publish_synthea_events(
         sample_dir=args.sample_dir,
-        publisher=_NoopPublisher(),
+        publisher=publisher,
         clinical_topic=args.clinical_topic,
         lab_topic=args.lab_topic,
-        dry_run=True,
+        dry_run=dry_run,
     )
-    print("Dry-run only until ADC Pub/Sub publisher is wired (Phase 12).")
+    mode = "dry-run" if dry_run else "live"
+    print(f"Publish mode: {mode}")
     print(summary)
     return 0
 

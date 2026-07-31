@@ -40,6 +40,15 @@ class Settings(BaseSettings):
 
     pubsub_clinical_topic: str = Field(default="clinical-records", alias="PUBSUB_CLINICAL_TOPIC")
     pubsub_lab_topic: str = Field(default="lab-updates", alias="PUBSUB_LAB_TOPIC")
+    # Phase 12 ingestion subscriptions + app-level DLQ topics (Terraform names)
+    pubsub_clinical_subscription: str = Field(
+        default="clinical-records-sub", alias="PUBSUB_CLINICAL_SUBSCRIPTION"
+    )
+    pubsub_lab_subscription: str = Field(default="lab-updates-sub", alias="PUBSUB_LAB_SUBSCRIPTION")
+    pubsub_clinical_dlq_topic: str = Field(
+        default="clinical-records-dlq", alias="PUBSUB_CLINICAL_DLQ_TOPIC"
+    )
+    pubsub_lab_dlq_topic: str = Field(default="lab-updates-dlq", alias="PUBSUB_LAB_DLQ_TOPIC")
 
     # OpenTelemetry (Phase 1.5) — empty OTLP endpoint means no remote export
     otel_service_name: str = Field(default="trialmatch", alias="OTEL_SERVICE_NAME")

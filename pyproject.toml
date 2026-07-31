@@ -35,6 +35,9 @@ qdrant = [
 vertex = [
     "google-cloud-aiplatform>=1.60",
 ]
+pubsub = [
+    "google-cloud-pubsub>=2.20",
+]
 
 [tool.setuptools.packages.find]
 where = ["src"]
