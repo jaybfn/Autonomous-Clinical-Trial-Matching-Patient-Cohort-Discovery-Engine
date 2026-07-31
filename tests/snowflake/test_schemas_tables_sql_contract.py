@@ -24,3 +24,9 @@ def test_raw_synthea_landing_tables_named_for_seed_script() -> None:
     assert "RAW_SYNTHEA_LABS" in upper
     assert "RAW_SYNTHEA_CONDITIONS" in upper
     assert "AUDIT_MATCH_JUSTIFICATIONS" in upper
+
+
+def test_start_stop_columns_are_quoted_identifiers() -> None:
+    # START is a Snowflake reserved word; unquoted fails compilation.
+    assert '"START"' in SQL
+    assert '"STOP"' in SQL
