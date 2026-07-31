@@ -39,6 +39,19 @@ vertex = [
 pubsub = [
     "google-cloud-pubsub>=2.20",
 ]
+snowflake = [
+    "snowflake-connector-python>=3.10",
+]
+secrets = [
+    "google-cloud-secret-manager>=2.20",
+]
+runtime = [
+    "qdrant-client>=1.9",
+    "snowflake-connector-python>=3.10",
+    "google-cloud-secret-manager>=2.20",
+    "google-cloud-aiplatform>=1.60",
+    "google-cloud-pubsub>=2.20",
+]
 
 [tool.setuptools.packages.find]
 where = ["src"]

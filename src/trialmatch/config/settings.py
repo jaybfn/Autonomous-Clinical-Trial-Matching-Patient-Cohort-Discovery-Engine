@@ -35,6 +35,15 @@ class Settings(BaseSettings):
     snowflake_schema: str = Field(default="PUBLIC", alias="SNOWFLAKE_SCHEMA")
     # Path to PEM on disk (often fetched from Secret Manager) — never the key material itself.
     snowflake_private_key_path: str = Field(default="", alias="SNOWFLAKE_PRIVATE_KEY_PATH")
+    # Secret Manager secret IDs (Workload Identity); materializer writes PEM to disk at startup.
+    snowflake_private_key_sm_id: str = Field(default="", alias="SNOWFLAKE_PRIVATE_KEY_SM_ID")
+    snowflake_private_key_passphrase_sm_id: str = Field(
+        default="", alias="SNOWFLAKE_PRIVATE_KEY_PASSPHRASE_SM_ID"
+    )
+    # Optional passphrase for encrypted PEM (prefer SM id above in GKE).
+    snowflake_private_key_passphrase: str = Field(
+        default="", alias="SNOWFLAKE_PRIVATE_KEY_PASSPHRASE"
+    )
     agent_read_role: str = Field(default="AGENT_READ_ROLE", alias="AGENT_READ_ROLE")
     audit_write_role: str = Field(default="AUDIT_WRITE_ROLE", alias="AUDIT_WRITE_ROLE")
 

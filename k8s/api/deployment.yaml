@@ -19,10 +19,13 @@ spec:
       containers:
         - name: api
           image: us-central1-docker.pkg.dev/autonomous-agent-503517/trialmatch-docker/trialmatch-api:0.1.0
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - name: http
               containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: trialmatch-api-config
           env:
             - name: GCP_PROJECT_ID
               value: autonomous-agent-503517
@@ -34,8 +37,9 @@ spec:
               value: trialmatch-api
             - name: QDRANT_URL
               value: http://qdrant.trialmatch.svc.cluster.local:6333
+            # Vertex uses Workload Identity (no Ollama in-cluster).
             - name: LLM_PROVIDER
-              value: ollama
+              value: vertex
             - name: EMBEDDING_PROVIDER
               value: deterministic
             - name: API_HOST
@@ -46,13 +50,13 @@ spec:
             httpGet:
               path: /readyz
               port: http
-            initialDelaySeconds: 5
+            initialDelaySeconds: 10
             periodSeconds: 10
           livenessProbe:
             httpGet:
               path: /healthz
               port: http
-            initialDelaySeconds: 15
+            initialDelaySeconds: 20
             periodSeconds: 20
           resources:
             requests:

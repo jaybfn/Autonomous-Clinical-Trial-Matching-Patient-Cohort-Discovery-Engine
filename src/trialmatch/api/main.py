@@ -50,8 +50,10 @@ def create_app(
         if wire_live_graph and app.state.graph_runner is None:
             if app.state.settings is None:
                 raise RuntimeError("Cannot wire live graph without settings")
+            from trialmatch.adapters.secret_materialize import materialize_snowflake_secrets
             from trialmatch.api.factory import build_default_graph_runner
 
+            app.state.settings = materialize_snowflake_secrets(app.state.settings)
             app.state.graph_runner = build_default_graph_runner(app.state.settings)
             logger.info("startup: live graph_runner ready")
         yield
