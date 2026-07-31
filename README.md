@@ -107,7 +107,8 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 | 9 Agent 3: Matcher (Snowflake + Qdrant Hybrid) | Complete |
 | 10 Agent 4: Auditor (Justifications & Audit Logs) | Complete |
 | 11 LangGraph Orchestrator + FastAPI | Complete |
-| 12–14 | Planned |
+| 12 Ingestion (Pub/Sub → Orchestrator) | Complete |
+| 13–14 | Planned |
 
 ## Deployed infra outputs (dev)
 

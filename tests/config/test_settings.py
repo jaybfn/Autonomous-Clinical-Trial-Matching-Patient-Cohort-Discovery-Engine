@@ -52,6 +52,8 @@ def test_settings_defaults_are_non_secret(monkeypatch: pytest.MonkeyPatch) -> No
     assert settings.auditor_snowflake_schema == "AUDIT"
     assert settings.api_host == "0.0.0.0"
     assert settings.api_port == 8080
+    assert settings.pubsub_clinical_subscription == "clinical-records-sub"
+    assert settings.pubsub_clinical_dlq_topic == "clinical-records-dlq"
 
 
 def test_settings_otel_defaults(monkeypatch: pytest.MonkeyPatch) -> None:

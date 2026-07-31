@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trialmatch-ingestion
+  namespace: trialmatch
+  labels:
+    app.kubernetes.io/name: trialmatch-ingestion
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: trialmatch-ingestion
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: trialmatch-ingestion
+    spec:
+      serviceAccountName: trialmatch-ksa
+      containers:
+        - name: ingestion
+          image: us-central1-docker.pkg.dev/autonomous-agent-503517/trialmatch-docker/trialmatch-api:0.1.0
+          imagePullPolicy: IfNotPresent
+          command: ["python", "-m", "trialmatch.ingestion.subscriber"]
+          env:
+            - name: GCP_PROJECT_ID
+              value: autonomous-agent-503517
+            - name: ENVIRONMENT
+              value: dev
+            - name: LOG_LEVEL
+              value: INFO
+            - name: OTEL_SERVICE_NAME
+              value: trialmatch-ingestion
+            - name: QDRANT_URL
+              value: http://qdrant.trialmatch.svc.cluster.local:6333
+            - name: LLM_PROVIDER
+              value: ollama
+            - name: EMBEDDING_PROVIDER
+              value: deterministic
+            - name: PUBSUB_CLINICAL_SUBSCRIPTION
+              value: clinical-records-sub
+            - name: PUBSUB_CLINICAL_DLQ_TOPIC
+              value: clinical-records-dlq
+            - name: PUBSUB_LAB_SUBSCRIPTION
+              value: lab-updates-sub
+            - name: PUBSUB_LAB_DLQ_TOPIC
+              value: lab-updates-dlq
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
