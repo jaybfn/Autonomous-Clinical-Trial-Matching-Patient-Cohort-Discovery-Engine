@@ -8,7 +8,7 @@ Enterprise event-driven system for clinical trial matching and patient cohort di
 - **Compute:** FastAPI + LangGraph agents on Private GKE (Workload Identity)
 - **Warehouse / vectors:** Snowflake (dbt) + Qdrant
 - **Primary datasets:** Synthea (synthetic EPR) + ClinicalTrials.gov (eligibility text)
-- **Observability:** OpenTelemetry (PHI-safe spans) → OTLP (Cloud Trace in later phases)
+- **Observability:** OpenTelemetry (PHI-safe spans) → optional OTLP; see [docs/](docs/)
 - **GCP project:** `autonomous-agent-503517` via env `GCP_PROJECT_ID` (see `.env.example`)
 - **IaC:** Terraform (VPC, NAT, GKE, Pub/Sub, IAM)
 
@@ -109,7 +109,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 | 11 LangGraph Orchestrator + FastAPI | Complete |
 | 12 Ingestion (Pub/Sub → Orchestrator) | Complete |
 | 13 CI/CD (GitHub Actions) | Complete |
-| 14 | Planned |
+| 14 Integration, Observability & Tracked Docs | Complete |
 
 ## Deployed infra outputs (dev)
 
