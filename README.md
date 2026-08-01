@@ -220,6 +220,12 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 | 13 CI/CD (GitHub Actions) | Complete |
 | 14 Integration, Observability & Tracked Docs | Complete |
 
+## Deploy / onboarding
+
+**New to the project?** Start here (clone → bastion → Snowflake → Ollama/Qdrant → working `/v1/match`, including troubleshooting we hit along the way):
+
+→ **[Getting started: end-to-end live path](docs/guides/getting-started-live-path.md)**
+
 ## Deployed infra outputs (dev)
 
 Captured from `terraform apply` in `infra/terraform/envs/dev` (project `autonomous-agent-503517`). Refresh anytime with `terraform output`.
