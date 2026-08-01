@@ -70,7 +70,14 @@ class _SdkHttp:
         return len(payload)
 
     def search(self, collection: str, vector: list[float], limit: int) -> list[dict[str, Any]]:
-        hits = self._client.search(collection_name=collection, query_vector=vector, limit=limit)
+        # qdrant-client >=1.16 uses query_points; older SDKs expose search().
+        if hasattr(self._client, "query_points"):
+            result = self._client.query_points(
+                collection_name=collection, query=vector, limit=limit
+            )
+            hits = getattr(result, "points", result)
+        else:
+            hits = self._client.search(collection_name=collection, query_vector=vector, limit=limit)
         return [
             {"id": str(h.id), "score": float(h.score), "payload": dict(h.payload or {})}
             for h in hits
@@ -113,4 +120,6 @@ class QdrantVectorStore:
         return len(prepared)
 
     def search(self, vector: list[float], limit: int = 10) -> list[dict[str, Any]]:
+        if not self._http.collection_exists(self.collection):
+            return []
         return self._http.search(self.collection, vector, limit)

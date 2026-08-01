@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: qdrant
-          image: qdrant/qdrant:v1.13.2
+          image: qdrant/qdrant:v1.18.0
           ports:
             - name: http
               containerPort: 6333
