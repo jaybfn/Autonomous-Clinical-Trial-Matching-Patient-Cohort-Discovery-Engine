@@ -15,6 +15,7 @@ def test_qdrant_k8s_manifests_exist() -> None:
     svc = (base / "service.yaml").read_text(encoding="utf-8")
     assert "kind: StatefulSet" in deploy or "kind: Deployment" in deploy
     assert "qdrant" in deploy.lower()
+    assert "qdrant/qdrant:v1.18" in deploy or "qdrant/qdrant:v1.18.0" in deploy
     assert "kind: Service" in svc
     assert "6333" in svc
 

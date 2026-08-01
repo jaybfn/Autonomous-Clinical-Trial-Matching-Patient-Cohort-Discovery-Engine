@@ -57,6 +57,14 @@ def test_upsert_and_search_roundtrip_via_http_mock(settings: Settings) -> None:
     assert hits[0]["score"] == 0.91
 
 
+def test_search_returns_empty_when_collection_missing(settings: Settings) -> None:
+    http = MagicMock()
+    http.collection_exists.return_value = False
+    store = QdrantVectorStore(settings=settings, http=http)
+    assert store.search([0.1] * 8, limit=3) == []
+    http.search.assert_not_called()
+
+
 def test_point_id_is_stable_uuid_derived_from_nct(settings: Settings) -> None:
     from trialmatch.adapters.qdrant_client import point_id_for_nct
 
