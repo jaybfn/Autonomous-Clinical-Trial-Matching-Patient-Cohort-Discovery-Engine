@@ -62,9 +62,12 @@ For **live** Snowflake wiring (Secret Manager + ConfigMap), see
 kubectl apply -f k8s/serviceaccounts/trialmatch-ksa.yaml
 kubectl apply -f k8s/qdrant/deployment.yaml
 kubectl apply -f k8s/qdrant/service.yaml
+kubectl apply -f k8s/ollama/deployment.yaml
+kubectl apply -f k8s/ollama/service.yaml
 kubectl apply -f k8s/api/configmap.yaml
 kubectl apply -f k8s/api/deployment.yaml
 kubectl apply -f k8s/api/service.yaml
+# Ollama may take several minutes on first boot while pulling llama3.2:1b
 
 kubectl -n trialmatch get pods
 kubectl -n trialmatch port-forward svc/trialmatch-api 8080:80
