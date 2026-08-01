@@ -19,7 +19,8 @@ def test_deployment_uses_configmap_and_workload_identity() -> None:
     assert "configMapRef:" in deploy
     assert "trialmatch-api-config" in deploy
     assert "LLM_PROVIDER" in deploy
-    assert "vertex" in deploy
+    assert "ollama" in deploy
+    assert "OLLAMA_BASE_URL" in deploy
 
 
 def test_configmap_references_sm_ids_not_pem_material() -> None:

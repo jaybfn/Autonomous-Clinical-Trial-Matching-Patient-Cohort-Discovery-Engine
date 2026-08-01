@@ -37,9 +37,13 @@ spec:
               value: trialmatch-api
             - name: QDRANT_URL
               value: http://qdrant.trialmatch.svc.cluster.local:6333
-            # Vertex uses Workload Identity (no Ollama in-cluster).
+            # Free open model via in-cluster Ollama (see k8s/ollama/).
             - name: LLM_PROVIDER
-              value: vertex
+              value: ollama
+            - name: OLLAMA_BASE_URL
+              value: http://ollama.trialmatch.svc.cluster.local:11434
+            - name: OLLAMA_LLM_MODEL
+              value: llama3.2:1b
             - name: EMBEDDING_PROVIDER
               value: deterministic
             - name: API_HOST

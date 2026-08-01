@@ -34,6 +34,10 @@ spec:
               value: http://qdrant.trialmatch.svc.cluster.local:6333
             - name: LLM_PROVIDER
               value: ollama
+            - name: OLLAMA_BASE_URL
+              value: http://ollama.trialmatch.svc.cluster.local:11434
+            - name: OLLAMA_LLM_MODEL
+              value: llama3.2:1b
             - name: EMBEDDING_PROVIDER
               value: deterministic
             - name: PUBSUB_CLINICAL_SUBSCRIPTION
