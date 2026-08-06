@@ -60,7 +60,8 @@ def test_devcontainer_wires_gcloud_adc_and_project_env() -> None:
     post_create = REPO_ROOT / ".devcontainer" / "post-create.sh"
     assert "google-cloud-cli" in dockerfile
     assert post_create.is_file()
-    assert "APPDATA" in cfg
+    # Linux host ADC path (~/.config/gcloud); Windows used APPDATA/gcloud.
+    assert "${localEnv:HOME}/.config/gcloud" in cfg
     assert "/mnt/host-gcloud" in cfg
     assert "GOOGLE_APPLICATION_CREDENTIALS" in cfg
     assert "CLOUDSDK_CONFIG" in cfg
