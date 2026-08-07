@@ -16,6 +16,7 @@ if str(APP_DIR) not in sys.path:
     sys.path.insert(0, str(APP_DIR))
 
 from api_client import TrialMatchApiError, healthz, match_patient  # noqa: E402
+from diagrams import render_diagram  # noqa: E402
 
 PRESETS_PATH = APP_DIR / "presets.json"
 STYLES_PATH = APP_DIR / "styles.css"
@@ -213,7 +214,22 @@ def _render_results(payload: dict[str, Any]) -> None:
         )
 
 
-def _render_workspace() -> None:
+def _render_sidebar() -> None:
+    with st.sidebar:
+        st.markdown("**Session**")
+        st.caption(f"API: `{_api_base()}`")
+        if st.button("Check API health"):
+            try:
+                body = healthz(_api_base(), api_key=_api_key())
+                st.success(f"API healthy: {body}")
+            except TrialMatchApiError as exc:
+                st.error(str(exc))
+        if st.button("Sign out"):
+            st.session_state.clear()
+            st.rerun()
+
+
+def _render_match_tab() -> None:
     presets = _load_presets()
     labels = [f"{p['label']}  ·  {p['patient_id'][:8]}…" for p in presets]
     by_label = dict(zip(labels, presets, strict=True))
@@ -232,19 +248,6 @@ def _render_workspace() -> None:
         """,
         unsafe_allow_html=True,
     )
-
-    with st.sidebar:
-        st.markdown("**Session**")
-        st.caption(f"API: `{_api_base()}`")
-        if st.button("Check API health"):
-            try:
-                body = healthz(_api_base(), api_key=_api_key())
-                st.success(f"API healthy: {body}")
-            except TrialMatchApiError as exc:
-                st.error(str(exc))
-        if st.button("Sign out"):
-            st.session_state.clear()
-            st.rerun()
 
     st.markdown('<div class="tm-panel">', unsafe_allow_html=True)
     selected_label = st.selectbox("Demo patient", labels, index=0)
@@ -301,11 +304,72 @@ def _render_workspace() -> None:
     )
 
 
+def _render_architecture_tab() -> None:
+    st.markdown(
+        """
+        <div class="tm-shell">
+          <div class="tm-hero">
+            <p class="tm-brand">System architecture</p>
+            <p class="tm-sub">
+              Full stack from data sources through GCP, Snowflake, and observability —
+              same diagram as the project README, with platform-colored blocks.
+            </p>
+          </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    with st.container(border=True):
+        render_diagram("architecture")
+
+
+def _render_agents_tab() -> None:
+    st.markdown(
+        """
+        <div class="tm-shell">
+          <div class="tm-hero">
+            <p class="tm-brand">Agent pipeline</p>
+            <p class="tm-sub">
+              LangGraph order for POST /v1/match. Any node failure short-circuits to
+              END failed (fail-closed).
+            </p>
+          </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        """
+        | Node | Agent | Role |
+        |------|--------|------|
+        | **Compliance** | Agent 1 | Scrub PHI → `scrubbed_text`, `content_hash` |
+        | **Parser** | Agent 2 | LLM JSON → validated clinical features |
+        | **Matcher** | Agent 3 | Hybrid Qdrant + Snowflake rank |
+        | **Auditor** | Agent 4 | Justification → append-only audit rows |
+        """
+    )
+    with st.container(border=True):
+        render_diagram("agents")
+
+
+def _render_workspace() -> None:
+    _render_sidebar()
+    match_tab, architecture_tab, agents_tab = st.tabs(
+        ["Find matches", "System architecture", "Agent pipeline"]
+    )
+    with match_tab:
+        _render_match_tab()
+    with architecture_tab:
+        _render_architecture_tab()
+    with agents_tab:
+        _render_agents_tab()
+
+
 def main() -> None:
     st.set_page_config(
         page_title="TrialMatch · Clinician Demo",
         page_icon="🩺",
-        layout="centered",
+        layout="wide",
         initial_sidebar_state="expanded",
     )
     _load_css()

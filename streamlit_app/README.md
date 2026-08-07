@@ -88,8 +88,9 @@ Secrets in `.streamlit/secrets.toml` override env when present. Do not commit `.
 
 | File | Role |
 |------|------|
-| `app.py` | Login + workspace + results |
+| `app.py` | Login + tabs (match / architecture / agents) |
+| `diagrams.py` | Themed Mermaid (GCP / Snowflake / Qdrant / agents) |
 | `api_client.py` | `GET /healthz`, `POST /v1/match` (+ optional `X-API-Key`) |
 | `presets.json` | Demo patient IDs + notes |
-| `styles.css` | Clinical slate/teal theme |
+| `styles.css` | Clinical slate/teal theme + diagram legend |
 | `secrets.toml.example` | Credential / API URL / API key template |

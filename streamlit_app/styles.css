@@ -78,6 +78,72 @@ h3,
   margin-bottom: 1rem;
 }
 
+.tm-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin: 0.35rem 0 0.9rem;
+}
+
+.tm-leg {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 0.28rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+}
+
+.tm-leg-gcp {
+  background: #e8f0fe;
+  color: #174ea6;
+  border-color: #4285f4;
+}
+
+.tm-leg-sf {
+  background: #e5f6fd;
+  color: #115e7a;
+  border-color: #29b5e8;
+}
+
+.tm-leg-qd {
+  background: #f3e8ff;
+  color: #4c1d95;
+  border-color: #7c3aed;
+}
+
+.tm-leg-agent {
+  background: #d8f0f0;
+  color: #0f1c24;
+  border-color: #0d7377;
+}
+
+.tm-leg-vertex {
+  background: #e6f4ea;
+  color: #137333;
+  border-color: #34a853;
+}
+
+.tm-leg-ollama {
+  background: #f3f4f6;
+  color: #111827;
+  border-color: #6b7280;
+}
+
+.tm-leg-src {
+  background: #fff7ed;
+  color: #9a3412;
+  border-color: #ea580c;
+}
+
+.tm-leg-obs {
+  background: #fef3c7;
+  color: #92400e;
+  border-color: #d97706;
+}
+
 .tm-badge {
   display: inline-flex;
   align-items: center;
