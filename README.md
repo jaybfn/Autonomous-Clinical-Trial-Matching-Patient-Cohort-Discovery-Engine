@@ -222,7 +222,11 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Deploy / onboarding
 
-**New to the project?** Start here (clone → bastion → Snowflake → Ollama/Qdrant → working `/v1/match`, including troubleshooting we hit along the way):
+**Moving to a new GCP account / full rebuild?** One step-by-step checklist (Terraform → Snowflake sample or full data → Qdrant → public Ingress → Streamlit Cloud), including pitfalls from the live bring-up:
+
+→ **[Deploy from scratch (new GCP account)](docs/guides/DEPLOY-FROM-SCRATCH.md)**
+
+**New to the project (plumbing narrative)?** Clone → bastion → Snowflake → Ollama/Qdrant → working `/v1/match`:
 
 → **[Getting started: end-to-end live path](docs/guides/getting-started-live-path.md)**
 

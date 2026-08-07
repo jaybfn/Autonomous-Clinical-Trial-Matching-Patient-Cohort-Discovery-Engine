@@ -12,6 +12,8 @@ Two ways to reach the API:
 
 Full ops checklist: [docs/runbooks/public-api-streamlit-cloud.md](../docs/runbooks/public-api-streamlit-cloud.md).
 
+**New GCP account / full stack rebuild** (Terraform → data → Ingress → this app): [docs/guides/DEPLOY-FROM-SCRATCH.md](../docs/guides/DEPLOY-FROM-SCRATCH.md).
+
 ## Prerequisites (local tunnel)
 
 1. API reachable from this machine (typical bastion port-forward):
