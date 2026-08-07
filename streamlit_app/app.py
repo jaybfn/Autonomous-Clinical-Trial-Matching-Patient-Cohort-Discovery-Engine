@@ -35,6 +35,11 @@ def _api_base() -> str:
     return _secret("TRIALMATCH_API_BASE_URL", "http://127.0.0.1:18080").rstrip("/")
 
 
+def _api_key() -> str:
+    """Shared secret for public Ingress; empty when using local unauthenticated tunnels."""
+    return _secret("TRIALMATCH_API_KEY", "")
+
+
 def _guest_creds() -> tuple[str, str]:
     user = _secret("DEMO_GUEST_USERNAME", "")
     password = _secret("DEMO_GUEST_PASSWORD", "")
@@ -233,7 +238,7 @@ def _render_workspace() -> None:
         st.caption(f"API: `{_api_base()}`")
         if st.button("Check API health"):
             try:
-                body = healthz(_api_base())
+                body = healthz(_api_base(), api_key=_api_key())
                 st.success(f"API healthy: {body}")
             except TrialMatchApiError as exc:
                 st.error(str(exc))
@@ -274,6 +279,7 @@ def _render_workspace() -> None:
                         _api_base(),
                         patient_id=patient_id,
                         note_text=note_text,
+                        api_key=_api_key(),
                     )
                     st.session_state["last_result"] = result
                 except TrialMatchApiError as exc:

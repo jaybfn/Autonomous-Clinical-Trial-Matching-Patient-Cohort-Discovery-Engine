@@ -321,7 +321,9 @@ Related scripts: `scripts/prepare_synthea_for_snowflake.py`, `scripts/put_copy_s
 
 ## Doctor demo (Streamlit)
 
-Private **demo UI** for clinicians/guests: login → pick a preset patient/note → call GKE `POST /v1/match` → render ranked trials. Matching stays on the backend; Streamlit only submits and displays.
+UI for clinicians/guests: login → pick a preset patient/note → call `POST /v1/match` → render ranked trials. Matching stays on the backend; Streamlit only submits and displays.
+
+**Local tunnel** (developers — bastion port-forward):
 
 ```bash
 # 1) API tunnel (bastion port-forward + optional SSH -L 18080 from Dev Container)
@@ -334,7 +336,7 @@ pip install -r streamlit_app/requirements.txt
 streamlit run streamlit_app/app.py --server.address 0.0.0.0 --server.port 8501
 ```
 
-Details: [streamlit_app/README.md](streamlit_app/README.md).
+**Streamlit Cloud** (colleagues — no bastion): point the app at the public GCE Ingress IP with `TRIALMATCH_API_KEY`. See [docs/runbooks/public-api-streamlit-cloud.md](docs/runbooks/public-api-streamlit-cloud.md) and [streamlit_app/README.md](streamlit_app/README.md).
 
 ## Deployed infra outputs (dev)
 

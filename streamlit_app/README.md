@@ -1,9 +1,18 @@
 # TrialMatch clinician demo (Streamlit)
 
-Thin UI for demos: guest login → pick a preset patient/note → `POST /v1/match` on the
-private GKE API → render ranked trials. Matching, Snowflake, and Qdrant stay on the backend.
+Thin UI for demos: guest login → pick a preset patient/note → `POST /v1/match` →
+render ranked trials. Matching, Snowflake, and Qdrant stay on the backend.
 
-## Prerequisites
+Two ways to reach the API:
+
+| Path | Who | `TRIALMATCH_API_BASE_URL` | API key |
+|------|-----|---------------------------|---------|
+| **Local tunnel** | Developers | `http://127.0.0.1:18080` | Empty unless GKE has a key set |
+| **Streamlit Cloud** | Colleagues | `http://<ingress-ip>` (or HTTPS domain) | Same as GKE `TRIALMATCH_API_KEY` |
+
+Full ops checklist: [docs/runbooks/public-api-streamlit-cloud.md](../docs/runbooks/public-api-streamlit-cloud.md).
+
+## Prerequisites (local tunnel)
 
 1. API reachable from this machine (typical bastion port-forward):
 
@@ -24,7 +33,7 @@ gcloud compute ssh trialmatch-bastion \
 
 2. Guest credentials configured (env **or** Streamlit secrets).
 
-## Install & run
+## Install & run (local)
 
 ```bash
 cd /workspace
@@ -33,11 +42,27 @@ pip install -r streamlit_app/requirements.txt
 mkdir -p .streamlit
 cp streamlit_app/secrets.toml.example .streamlit/secrets.toml
 # edit DEMO_GUEST_USERNAME / DEMO_GUEST_PASSWORD / TRIALMATCH_API_BASE_URL
+# set TRIALMATCH_API_KEY only if the API enforces it
 
 streamlit run streamlit_app/app.py --server.address 0.0.0.0 --server.port 8501
 ```
 
 Open the printed local URL. Sign in with the guest credentials from secrets.
+
+## Streamlit Cloud
+
+1. Connect the GitHub repo; main file `streamlit_app/app.py`.
+2. Secrets in the Cloud UI:
+
+```toml
+DEMO_GUEST_USERNAME = "guest"
+DEMO_GUEST_PASSWORD = "<share-out-of-band>"
+TRIALMATCH_API_BASE_URL = "http://<STATIC_IP>"
+TRIALMATCH_API_KEY = "<same-as-GKE>"
+```
+
+3. Share only the Streamlit URL + guest password with colleagues.
+   Guest login is **not** API security; the API key is.
 
 ## Environment variables
 
@@ -46,6 +71,7 @@ Open the printed local URL. Sign in with the guest credentials from secrets.
 | `DEMO_GUEST_USERNAME` | Guest login user | (required) |
 | `DEMO_GUEST_PASSWORD` | Guest login password | (required) |
 | `TRIALMATCH_API_BASE_URL` | FastAPI base URL | `http://127.0.0.1:18080` |
+| `TRIALMATCH_API_KEY` | Sent as `X-API-Key` on match | empty (no header) |
 
 Secrets in `.streamlit/secrets.toml` override env when present. Do not commit `.streamlit/secrets.toml`.
 
@@ -56,21 +82,12 @@ Secrets in `.streamlit/secrets.toml` override env when present. Do not commit `.
 3. Click **Find matching trials** (spinner while backend runs; timeout ~180s).
 4. Review justification, ranked NCT cards (CT.gov links), hits/misses, audit metadata.
 
-## Sharing with someone else
-
-This app is **not** deployed on GKE by default. For a private demo:
-
-- Run Streamlit on a machine you control,
-- Keep the API port-forward/tunnel up,
-- Share the Streamlit URL **and** guest credentials over a secure channel,
-- Remind guests this is synthetic/demo data only.
-
 ## Files
 
 | File | Role |
 |------|------|
 | `app.py` | Login + workspace + results |
-| `api_client.py` | `GET /healthz`, `POST /v1/match` |
+| `api_client.py` | `GET /healthz`, `POST /v1/match` (+ optional `X-API-Key`) |
 | `presets.json` | Demo patient IDs + notes |
 | `styles.css` | Clinical slate/teal theme |
-| `secrets.toml.example` | Credential / API URL template |
+| `secrets.toml.example` | Credential / API URL / API key template |

@@ -13,14 +13,26 @@ class TrialMatchApiError(RuntimeError):
     """Raised when the TrialMatch API cannot be reached or returns a bad response."""
 
 
-def healthz(base_url: str, *, timeout_s: float = 5.0) -> dict[str, Any]:
+def _headers(api_key: str | None) -> dict[str, str]:
+    key = (api_key or "").strip()
+    if not key:
+        return {}
+    return {"X-API-Key": key}
+
+
+def healthz(
+    base_url: str,
+    *,
+    api_key: str | None = None,
+    timeout_s: float = 5.0,
+) -> dict[str, Any]:
     url = f"{base_url.rstrip('/')}/healthz"
     try:
-        response = requests.get(url, timeout=timeout_s)
-        response.raise_for_status()
-        return response.json()
+        response = requests.get(url, headers=_headers(api_key), timeout=timeout_s)
     except requests.RequestException as exc:
         raise TrialMatchApiError(f"Health check failed for {url}: {exc}") from exc
+    response.raise_for_status()
+    return response.json()
 
 
 def match_patient(
@@ -29,6 +41,7 @@ def match_patient(
     patient_id: str,
     note_text: str,
     correlation_id: str | None = None,
+    api_key: str | None = None,
     timeout_s: float = DEFAULT_TIMEOUT_S,
 ) -> dict[str, Any]:
     """POST /v1/match — returns MatchResponse JSON (including status=failed)."""
@@ -40,7 +53,12 @@ def match_patient(
     if correlation_id and correlation_id.strip():
         payload["correlation_id"] = correlation_id.strip()
     try:
-        response = requests.post(url, json=payload, timeout=timeout_s)
+        response = requests.post(
+            url,
+            json=payload,
+            headers=_headers(api_key),
+            timeout=timeout_s,
+        )
     except requests.Timeout as exc:
         raise TrialMatchApiError(
             f"Match request timed out after {timeout_s:.0f}s — is the API tunnel up?"
@@ -48,6 +66,10 @@ def match_patient(
     except requests.RequestException as exc:
         raise TrialMatchApiError(f"Match request failed for {url}: {exc}") from exc
 
+    if response.status_code == 401:
+        raise TrialMatchApiError(
+            "API rejected the request (401) — check TRIALMATCH_API_KEY matches the API."
+        )
     if response.status_code == 422:
         detail = response.text
         raise TrialMatchApiError(f"Validation error (422): {detail}")
