@@ -123,7 +123,8 @@ class QdrantVectorStore:
         total = 0
         for start in range(0, len(prepared), batch_size):
             chunk = prepared[start : start + batch_size]
-            total += self._http.upsert_points(self.collection, chunk)
+            self._http.upsert_points(self.collection, chunk)
+            total += len(chunk)
         return total
 
     def search(self, vector: list[float], limit: int = 10) -> list[dict[str, Any]]:
