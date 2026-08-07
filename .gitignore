@@ -16,6 +16,7 @@ data/raw/
 credentials.json
 service-account*.json
 **/secrets/
+.streamlit/secrets.toml
 
 # Python
 __pycache__/

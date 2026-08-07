@@ -319,6 +319,23 @@ curl -sS http://127.0.0.1:6333/collections/trial_criteria   # check points_count
 
 Related scripts: `scripts/prepare_synthea_for_snowflake.py`, `scripts/put_copy_synthea_to_snowflake.py`, `scripts/fetch_clinicaltrials_eligibility.py`, `scripts/index_trials_to_qdrant.py`. See also [data/README.md](data/README.md).
 
+## Doctor demo (Streamlit)
+
+Private **demo UI** for clinicians/guests: login → pick a preset patient/note → call GKE `POST /v1/match` → render ranked trials. Matching stays on the backend; Streamlit only submits and displays.
+
+```bash
+# 1) API tunnel (bastion port-forward + optional SSH -L 18080 from Dev Container)
+# 2) Guest secrets
+mkdir -p .streamlit
+cp streamlit_app/secrets.toml.example .streamlit/secrets.toml
+# edit DEMO_GUEST_USERNAME / DEMO_GUEST_PASSWORD
+
+pip install -r streamlit_app/requirements.txt
+streamlit run streamlit_app/app.py --server.address 0.0.0.0 --server.port 8501
+```
+
+Details: [streamlit_app/README.md](streamlit_app/README.md).
+
 ## Deployed infra outputs (dev)
 
 Captured from `terraform apply` in `infra/terraform/envs/dev` (project `autonomous-agent-503517`). Refresh anytime with `terraform output`.

@@ -29,7 +29,8 @@ Never commit real patient / EHR extracts. Prototype with synthetic/open data onl
 | `scripts/index_trials_to_qdrant.py` | Qdrant `trial_criteria` |
 | `scripts/seed_snowflake_from_synthea.py` | Legacy/dry-run sample seeder |
 | `scripts/publish_synthea_events.py` | Pub/Sub topics |
+| `streamlit_app/` | Clinician demo UI (guest login → `/v1/match`) |
 
-**Current Qdrant demo default:** ~2k studies (`diabetes` + `RECRUITING`). How to load Snowflake bulk data or expand the trial index is documented in the root [README.md](../README.md#data-loading-snowflake--qdrant).
+**Current Qdrant demo default:** ~2k studies (`diabetes` + `RECRUITING`). How to load Snowflake bulk data or expand the trial index is documented in the root [README.md](../README.md#data-loading-snowflake--qdrant). Streamlit demo: [streamlit_app/README.md](../streamlit_app/README.md).
 
 All cloud calls use ADC / Workload Identity — no hardcoded secrets.
