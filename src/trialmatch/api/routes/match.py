@@ -6,7 +6,7 @@ from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends
 
-from trialmatch.api.deps import get_graph_runner
+from trialmatch.api.deps import get_graph_runner, require_api_key
 from trialmatch.api.schemas import MatchItem, MatchRequest, MatchResponse
 from trialmatch.observability.logging import get_logger, sanitize_log_extra
 from trialmatch.observability.tracing import start_span
@@ -47,6 +47,7 @@ def _response_from_state(state: dict[str, Any]) -> MatchResponse:
 def match_trials(
     body: MatchRequest,
     runner: Annotated[GraphRunner, Depends(get_graph_runner)],
+    _: Annotated[None, Depends(require_api_key)],
 ) -> MatchResponse:
     state = initial_match_state(
         patient_id=body.patient_id,

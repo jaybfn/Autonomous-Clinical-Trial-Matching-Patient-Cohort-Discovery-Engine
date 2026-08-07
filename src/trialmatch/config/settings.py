@@ -82,3 +82,6 @@ class Settings(BaseSettings):
     # API (Phase 11)
     api_host: str = Field(default="0.0.0.0", alias="API_HOST")  # noqa: S104
     api_port: int = Field(default=8080, alias="API_PORT")
+    # Optional shared secret for public Ingress / Streamlit Cloud.
+    # Empty = auth disabled (local port-forward / unit tests).
+    trialmatch_api_key: str = Field(default="", alias="TRIALMATCH_API_KEY")

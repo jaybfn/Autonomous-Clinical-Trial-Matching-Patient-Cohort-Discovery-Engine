@@ -27,6 +27,7 @@ lab_subscription_name      = "lab-updates-sub"
 secret_ids = [
   "trialmatch-snowflake-private-key",
   "trialmatch-snowflake-passphrase",
+  "trialmatch-api-key",
 ]
 
 ingress_address_name = "trialmatch-ingress-ip"

@@ -123,6 +123,7 @@ variable "secret_ids" {
   default = [
     "trialmatch-snowflake-private-key",
     "trialmatch-snowflake-passphrase",
+    "trialmatch-api-key",
   ]
 }
 

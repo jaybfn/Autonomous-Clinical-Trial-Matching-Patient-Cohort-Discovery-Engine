@@ -74,3 +74,6 @@ src = ["src", "tests", "scripts", "streamlit_app"]
 select = ["E", "F", "I", "UP", "B"]
 # Optional[] kept for broader pydantic typing compatibility in shared models.
 ignore = ["UP045"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["trialmatch", "streamlit_app"]
