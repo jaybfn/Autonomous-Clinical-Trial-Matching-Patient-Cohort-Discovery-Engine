@@ -23,8 +23,13 @@ Never commit real patient / EHR extracts. Prototype with synthetic/open data onl
 
 | Script | Destination |
 |--------|-------------|
-| `scripts/seed_snowflake_from_synthea.py` | Snowflake landing tables |
+| `scripts/prepare_synthea_for_snowflake.py` | Slim CSVs under `data/raw/synthea-hf/for_snowflake/` |
+| `scripts/put_copy_synthea_to_snowflake.py` | Snowflake `RAW.RAW_SYNTHEA_*` (PUT + COPY) |
+| `scripts/fetch_clinicaltrials_eligibility.py` | `data/raw/clinicaltrials/eligibility.jsonl` (CT.gov API v2) |
+| `scripts/index_trials_to_qdrant.py` | Qdrant `trial_criteria` |
+| `scripts/seed_snowflake_from_synthea.py` | Legacy/dry-run sample seeder |
 | `scripts/publish_synthea_events.py` | Pub/Sub topics |
-| `scripts/index_trials_to_qdrant.py` | Qdrant collection |
+
+**Current Qdrant demo default:** ~2k studies (`diabetes` + `RECRUITING`). How to load Snowflake bulk data or expand the trial index is documented in the root [README.md](../README.md#data-loading-snowflake--qdrant).
 
 All cloud calls use ADC / Workload Identity — no hardcoded secrets.

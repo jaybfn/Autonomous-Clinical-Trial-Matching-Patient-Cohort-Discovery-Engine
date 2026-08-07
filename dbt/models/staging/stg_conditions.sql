@@ -2,8 +2,8 @@
 
 select
   patient as patient_id,
-  start as condition_start,
-  stop as condition_stop,
+  "START" as condition_start,
+  "STOP" as condition_stop,
   code as condition_code,
   description as condition_description,
   loaded_at
