@@ -2,77 +2,78 @@
 
 from __future__ import annotations
 
-import html
+import json
 from typing import Literal
 
 import streamlit as st
 import streamlit.components.v1 as components
 
 # Vendor-ish palette via Mermaid classDef (approximate brand colors).
+# Keep labels ASCII-safe (no raw HTML in node text) to avoid Mermaid parse errors.
 
-SYSTEM_ARCHITECTURE_MERMAID = r"""
+SYSTEM_ARCHITECTURE_MERMAID = """
 flowchart TB
-  subgraph sources["Data sources"]
-    SYN["Synthea · notes / labs / conditions"]
-    CTG["ClinicalTrials.gov · eligibility JSONL"]
-    PUBLISH["publish_synthea_events.py"]
-    INDEX["index_trials_to_qdrant.py"]
+  subgraph sources[Data sources]
+    SYN[Synthea notes labs conditions]
+    CTG[ClinicalTrials.gov eligibility JSONL]
+    PUBLISH[publish_synthea_events.py]
+    INDEX[index_trials_to_qdrant.py]
   end
 
-  subgraph gcp["Google Cloud · GCP project"]
-    subgraph net["Networking · Terraform"]
-      VPC["VPC + private subnets"]
-      NAT["Cloud NAT IPs"]
-      FW["Firewall"]
+  subgraph gcp[Google Cloud GCP project]
+    subgraph net[Networking Terraform]
+      VPC[VPC and private subnets]
+      NAT[Cloud NAT IPs]
+      FW[Firewall]
     end
 
-    subgraph messaging["Pub/Sub"]
-      T_CLIN[("clinical-records")]
-      T_LAB[("lab-updates")]
-      DLQ_C[("clinical-records-dlq")]
-      DLQ_L[("lab-updates-dlq")]
-      SUB_C["clinical-records-sub"]
-      SUB_L["lab-updates-sub"]
+    subgraph messaging[Pub/Sub]
+      T_CLIN[(clinical-records)]
+      T_LAB[(lab-updates)]
+      DLQ_C[(clinical-records-dlq)]
+      DLQ_L[(lab-updates-dlq)]
+      SUB_C[clinical-records-sub]
+      SUB_L[lab-updates-sub]
     end
 
-    subgraph gke["Private GKE · trialmatch-gke"]
-      KSA["KSA trialmatch-ksa · Workload Identity"]
-      ING_API["Ingress / static IP"]
-      API["FastAPI · trialmatch-api"]
-      WORKER["Ingestion worker · subscriber.py"]
-      QDR[("Qdrant · trial_criteria")]
+    subgraph gke[Private GKE trialmatch-gke]
+      KSA[KSA trialmatch-ksa Workload Identity]
+      ING_API[Ingress / static IP]
+      API[FastAPI trialmatch-api]
+      WORKER[Ingestion worker subscriber.py]
+      QDR[(Qdrant trial_criteria)]
 
-      subgraph orch["LangGraph orchestrator"]
-        C["1 Compliance · PII scrub"]
-        P["2 Parser · clinical features"]
-        M["3 Matcher · hybrid rank"]
-        A["4 Auditor · justifications"]
+      subgraph orch[LangGraph orchestrator]
+        C[1 Compliance PII scrub]
+        P[2 Parser clinical features]
+        M[3 Matcher hybrid rank]
+        A[4 Auditor justifications]
         C --> P --> M --> A
       end
     end
 
-    AR[("Artifact Registry · trialmatch-docker")]
-    SM["Secret Manager · Snowflake key path"]
-    GSA["GSA · trialmatch-runtime"]
+    AR[(Artifact Registry trialmatch-docker)]
+    SM[Secret Manager Snowflake key path]
+    GSA[GSA trialmatch-runtime]
   end
 
-  subgraph llm["LLM providers"]
-    OLLAMA["Ollama · local / free"]
-    VERTEX["Vertex Gemini · ADC"]
+  subgraph llm[LLM providers]
+    OLLAMA[Ollama local / free]
+    VERTEX[Vertex Gemini ADC]
   end
 
-  subgraph sf["Snowflake · TRIALMATCH_DEV"]
-    RAW[("RAW · Synthea landing")]
-    STG[("STAGING · dbt")]
-    MARTS[("MARTS · AGENT_READ_ROLE")]
-    AUDIT[("AUDIT · AUDIT_WRITE_ROLE")]
+  subgraph sf[Snowflake TRIALMATCH_DEV]
+    RAW[(RAW Synthea landing)]
+    STG[(STAGING dbt)]
+    MARTS[(MARTS AGENT_READ_ROLE)]
+    AUDIT[(AUDIT AUDIT_WRITE_ROLE)]
   end
 
-  subgraph obs["Observability and CI"]
-    OTEL["OpenTelemetry · PHI-safe spans"]
-    OTLP["OTLP exporter · optional"]
-    GHA["GitHub Actions · Ruff / Pytest / TF"]
-    DOCS["Tracked docs · architecture / runbooks"]
+  subgraph obs[Observability and CI]
+    OTEL[OpenTelemetry PHI-safe spans]
+    OTLP[OTLP exporter optional]
+    GHA[GitHub Actions Ruff Pytest TF]
+    DOCS[Tracked docs architecture runbooks]
   end
 
   SYN --> PUBLISH --> T_CLIN
@@ -98,7 +99,7 @@ flowchart TB
   M -->|SELECT| MARTS
   A -->|INSERT| AUDIT
   RAW --> STG --> MARTS
-  SM -.->|key path only| MARTS
+  SM -.->|key-path| MARTS
   NAT --> MARTS
 
   API --> OTEL
@@ -127,25 +128,25 @@ flowchart TB
   class OTEL,OTLP,GHA,DOCS obs
 """
 
-AGENT_PIPELINE_MERMAID = r"""
+AGENT_PIPELINE_MERMAID = """
 flowchart TD
-  START(["START"]) --> C["Compliance<br/>PII scrub"]
-  C -->|ok| P["Parser<br/>clinical features"]
-  C -->|error| FAIL(["END failed"])
-  P -->|ok| M["Matcher<br/>Qdrant + Snowflake"]
+  START([START]) --> C[Compliance - PII scrub]
+  C -->|ok| P[Parser - clinical features]
+  C -->|error| FAIL([END failed])
+  P -->|ok| M[Matcher - Qdrant + Snowflake]
   P -->|error| FAIL
-  M -->|ok| A["Auditor<br/>justification + audit write"]
+  M -->|ok| A[Auditor - justification + audit write]
   M -->|error| FAIL
-  A --> OK(["END ok"])
+  A --> OK([END ok])
 
-  subgraph inputs["Inputs"]
-    NOTE["note_text + patient_id<br/>correlation_id"]
+  subgraph inputs[Inputs]
+    NOTE[note_text + patient_id + correlation_id]
   end
 
-  subgraph stores["Backends"]
-    LLM["Ollama / Vertex LLM"]
-    QDR[("Qdrant<br/>trial vectors")]
-    SF[("Snowflake<br/>MARTS read / AUDIT write")]
+  subgraph stores[Backends]
+    LLM[Ollama / Vertex LLM]
+    QDR[(Qdrant trial vectors)]
+    SF[(Snowflake MARTS read / AUDIT write)]
   end
 
   NOTE --> C
@@ -173,9 +174,9 @@ DiagramKind = Literal["architecture", "agents"]
 
 
 def render_mermaid(code: str, *, height: int = 920, element_id: str = "mermaid-diagram") -> None:
-    """Render Mermaid via CDN inside a Streamlit HTML component."""
+    """Render Mermaid by injecting source via JSON (avoids HTML-entity parse errors)."""
     safe_id = "".join(ch if ch.isalnum() or ch in "-_" else "-" for ch in element_id)
-    diagram_html = html.escape(code.strip())
+    code_json = json.dumps(code.strip())
     html_doc = f"""<!DOCTYPE html>
 <html>
 <head>
@@ -185,17 +186,24 @@ def render_mermaid(code: str, *, height: int = 920, element_id: str = "mermaid-d
       margin: 0;
       padding: 0;
       background: transparent;
-      font-family: "DM Sans", system-ui, sans-serif;
+      font-family: system-ui, sans-serif;
     }}
     #wrap {{
       padding: 0.35rem 0.15rem 1rem;
       overflow: auto;
+      min-height: 200px;
     }}
-    .mermaid {{
-      display: flex;
-      justify-content: center;
+    #err {{
+      display: none;
+      color: #a33b2b;
+      font-size: 0.9rem;
+      white-space: pre-wrap;
+      padding: 0.75rem;
+      border: 1px solid #f0c2bc;
+      border-radius: 8px;
+      background: #fff5f4;
     }}
-    .mermaid svg {{
+    #out svg {{
       max-width: 100%;
       height: auto;
     }}
@@ -203,16 +211,20 @@ def render_mermaid(code: str, *, height: int = 920, element_id: str = "mermaid-d
 </head>
 <body>
   <div id="wrap">
-    <pre class="mermaid" id="{safe_id}">{diagram_html}</pre>
+    <div id="err"></div>
+    <div id="out"></div>
   </div>
   <script type="module">
     import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
+    const code = {code_json};
+    const out = document.getElementById("out");
+    const err = document.getElementById("err");
     mermaid.initialize({{
       startOnLoad: false,
       securityLevel: "loose",
       theme: "base",
       themeVariables: {{
-        fontFamily: "DM Sans, system-ui, sans-serif",
+        fontFamily: "system-ui, sans-serif",
         fontSize: "14px",
         primaryColor: "#E8F0FE",
         primaryTextColor: "#174EA6",
@@ -234,7 +246,13 @@ def render_mermaid(code: str, *, height: int = 920, element_id: str = "mermaid-d
         useMaxWidth: true
       }}
     }});
-    await mermaid.run({{ nodes: [document.getElementById("{safe_id}")] }});
+    try {{
+      const result = await mermaid.render("{safe_id}-svg", code);
+      out.innerHTML = result.svg;
+    }} catch (e) {{
+      err.style.display = "block";
+      err.textContent = "Mermaid render failed: " + (e && e.message ? e.message : String(e));
+    }}
   </script>
 </body>
 </html>
