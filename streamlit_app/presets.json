@@ -1,0 +1,62 @@
+[
+  {
+    "id": "demo-t2d-retinopathy",
+    "label": "Type 2 diabetes + retinopathy (rich features)",
+    "patient_id": "7cd119b6-4aa3-4d17-be38-03311e40f1c0",
+    "note_text": "Adult with type 2 diabetes mellitus, HbA1c 8.1%. History of diabetic retinopathy and neuropathy. Discussing trial options for glycemic and renal risk reduction."
+  },
+  {
+    "id": "demo-t2d-renal",
+    "label": "Type 2 diabetes + renal involvement",
+    "patient_id": "5b19580a-f891-4ff9-be84-410357bafd1a",
+    "note_text": "Patient with longstanding type 2 diabetes and diabetic renal disease. Recent labs show elevated creatinine; HbA1c approximately 7.9%. Evaluating eligibility for diabetes-kidney studies."
+  },
+  {
+    "id": "demo-t2d-neuropathy",
+    "label": "Type 2 diabetes + neuropathy",
+    "patient_id": "ecabe9f3-329f-40b5-9101-9a17f090eabf",
+    "note_text": "Adult with type 2 diabetes mellitus complicated by neuropathy. HbA1c 8.4%. Seeking clinical trial options focused on diabetes complications."
+  },
+  {
+    "id": "demo-t2d-microalbumin",
+    "label": "Type 2 diabetes + microalbuminuria",
+    "patient_id": "759ab9d7-2716-4154-a6ec-a4a47b58ccd2",
+    "note_text": "Type 2 diabetes with microalbuminuria. HbA1c 7.6%, BMI elevated. Interested in trials addressing early diabetic kidney disease."
+  },
+  {
+    "id": "demo-t2d-prediabetes-overlap",
+    "label": "Diabetes / prediabetes spectrum",
+    "patient_id": "d09b53fb-f868-407a-b54f-f3d0de0d5f7a",
+    "note_text": "Adult with diabetes and prior prediabetes coding in chart. Current HbA1c 7.2%. Review for recruiting diabetes prevention and treatment trials."
+  },
+  {
+    "id": "demo-t2d-classic",
+    "label": "Classic T2D note (HbA1c focus)",
+    "patient_id": "7cd119b6-4aa3-4d17-be38-03311e40f1c0",
+    "note_text": "Adult with type 2 diabetes mellitus, HbA1c 8.1%."
+  },
+  {
+    "id": "demo-obesity-diabetes",
+    "label": "Obesity context with diabetes",
+    "patient_id": "5b19580a-f891-4ff9-be84-410357bafd1a",
+    "note_text": "Adult with type 2 diabetes and obesity (elevated BMI). HbA1c 8.0%. Considering lifestyle and pharmacologic diabetes trials."
+  },
+  {
+    "id": "demo-cv-diabetes",
+    "label": "Diabetes + cardiovascular risk language",
+    "patient_id": "ecabe9f3-329f-40b5-9101-9a17f090eabf",
+    "note_text": "Type 2 diabetes mellitus with cardiovascular risk factors. HbA1c 8.2%, hypertension history noted. Screen for T2D cardiovascular outcome trials."
+  },
+  {
+    "id": "demo-sparse-chart",
+    "label": "Known patient ID, sparse warehouse features",
+    "patient_id": "664d2f0c-41d9-4a2e-b92e-82c4b5d201e5",
+    "note_text": "Adult with type 2 diabetes mellitus, HbA1c 8.1%. Chart features may be limited; matching will lean on this note."
+  },
+  {
+    "id": "demo-hypertension-note",
+    "label": "Hypertension-focused note (contrast)",
+    "patient_id": "7cd119b6-4aa3-4d17-be38-03311e40f1c0",
+    "note_text": "Adult with essential hypertension on stable therapy. Blood pressure not at goal. Also has type 2 diabetes in history."
+  }
+]

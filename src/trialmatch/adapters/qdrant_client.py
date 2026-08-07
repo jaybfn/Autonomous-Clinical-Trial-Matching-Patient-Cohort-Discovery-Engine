@@ -107,7 +107,10 @@ class QdrantVectorStore:
         if not self._http.collection_exists(self.collection):
             self._http.create_collection(self.collection, vector_size)
 
-    def upsert(self, points: list[dict[str, Any]]) -> int:
+    def upsert(self, points: list[dict[str, Any]], *, batch_size: int = 50) -> int:
+        """Upsert points in batches to stay under Qdrant's request body limit (~32MB)."""
+        if batch_size < 1:
+            raise ValueError("batch_size must be >= 1")
         prepared: list[dict[str, Any]] = []
         for point in points:
             raw_id = str(point["id"])
@@ -116,8 +119,13 @@ class QdrantVectorStore:
             if "nct_id" not in payload:
                 payload["nct_id"] = raw_id
             prepared.append({"id": point_id, "vector": point["vector"], "payload": payload})
-        self._http.upsert_points(self.collection, prepared)
-        return len(prepared)
+
+        total = 0
+        for start in range(0, len(prepared), batch_size):
+            chunk = prepared[start : start + batch_size]
+            self._http.upsert_points(self.collection, chunk)
+            total += len(chunk)
+        return total
 
     def search(self, vector: list[float], limit: int = 10) -> list[dict[str, Any]]:
         if not self._http.collection_exists(self.collection):

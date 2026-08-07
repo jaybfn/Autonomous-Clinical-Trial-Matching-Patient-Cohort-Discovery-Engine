@@ -52,6 +52,10 @@ runtime = [
     "google-cloud-aiplatform>=1.60",
     "google-cloud-pubsub>=2.20",
 ]
+demo = [
+    "streamlit>=1.32",
+    "requests>=2.31",
+]
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -64,7 +68,7 @@ addopts = "-q"
 [tool.ruff]
 line-length = 100
 target-version = "py310"
-src = ["src", "tests", "scripts"]
+src = ["src", "tests", "scripts", "streamlit_app"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]

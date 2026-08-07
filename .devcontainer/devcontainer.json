@@ -47,6 +47,6 @@
   },
   "forwardPorts": [],
   "mounts": [
-    "source=${localEnv:APPDATA}/gcloud,target=/mnt/host-gcloud,type=bind,readonly,consistency=cached"
+    "source=${localEnv:HOME}/.config/gcloud,target=/mnt/host-gcloud,type=bind,readonly,consistency=cached"
   ]
 }

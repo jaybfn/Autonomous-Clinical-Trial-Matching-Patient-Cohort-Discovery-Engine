@@ -226,6 +226,116 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 → **[Getting started: end-to-end live path](docs/guides/getting-started-live-path.md)**
 
+## Data loading (Snowflake + Qdrant)
+
+### Current demo corpus (keep it simple)
+
+| Store | What is loaded | Scale (approx) |
+|-------|----------------|----------------|
+| **Snowflake** `RAW` / `MARTS` | SyntheticMass / Synthea HF dump (patients, conditions, observations→labs) via prepare + PUT/COPY + `dbt run` | ~1.6M patients, tens of millions of mart features |
+| **Qdrant** `trial_criteria` | ClinicalTrials.gov studies matching **`diabetes` + `RECRUITING` only** | **~1,953 trials** |
+
+We intentionally keep the Qdrant index at **~2k recruiting diabetes trials** for a simple, relevant demo. That is **not** all of ClinicalTrials.gov (400k+ studies). Wider corpora are optional below.
+
+Committed tiny fixtures remain under `data/synthea/samples/` and `data/clinicaltrials/samples/` for unit tests. Bulk files live under gitignored `data/raw/`.
+
+### Snowflake — Synthea / SyntheticMass → `RAW`
+
+```bash
+# 1) Project HF CSVs into slim landing files ( --limit 0 = all valid patients )
+python -u scripts/prepare_synthea_for_snowflake.py --limit 0
+
+# 2) PUT + COPY into RAW.RAW_SYNTHEA_* (uses .env keypair; ACCOUNTADMIN by default)
+python scripts/put_copy_synthea_to_snowflake.py --truncate
+
+# 3) Build STAGING / MARTS
+cd dbt && dbt run && cd ..
+```
+
+Requires Snowflake keypair env (`SNOWFLAKE_ACCOUNT`, `SNOWFLAKE_USER`, `SNOWFLAKE_PRIVATE_KEY_PATH`) and dbt profile (`~/.dbt/profiles.yml`). See [getting-started live path](docs/guides/getting-started-live-path.md) Part D.
+
+### Qdrant — index trials (current ~2k set)
+
+Qdrant runs in-cluster. From the Dev Container you need a double tunnel:
+
+1. **Bastion:** `kubectl -n trialmatch port-forward svc/qdrant 6333:6333`
+2. **Dev Container:** SSH local forward to that port:
+
+```bash
+gcloud compute ssh trialmatch-bastion \
+  --project=autonomous-agent-503517 \
+  --zone=us-central1-a \
+  --tunnel-through-iap \
+  -- -N -L 6333:127.0.0.1:6333
+```
+
+3. Verify, then index:
+
+```bash
+curl -sS -m 5 http://127.0.0.1:6333/readyz   # expect: all shards are ready
+
+# Fetch recruiting diabetes studies (default --max-studies 0 = all pages for this query)
+python -u scripts/fetch_clinicaltrials_eligibility.py \
+  --query "diabetes" \
+  --status RECRUITING \
+  --max-studies 0
+
+python scripts/index_trials_to_qdrant.py \
+  --sample-path data/raw/clinicaltrials/eligibility.jsonl \
+  --live
+```
+
+Upserts are **batched** (avoids Qdrant’s ~32MB request body limit). Expect `{'indexed': ~1953}` for the recruiting-diabetes corpus.
+
+### Optional — load *more* trials into Qdrant
+
+Only do this when you want a larger search space (more time, storage, and noisier neighbors).
+
+| Goal | Command hints | Approx CT.gov size |
+|------|----------------|--------------------|
+| Keep demo simple (default) | `--query "diabetes" --status RECRUITING` | ~2k |
+| All diabetes (any status) | `--query "diabetes" --status "" --max-studies 0` | ~24k |
+| T2D recruiting only | `--query "type 2 diabetes" --status RECRUITING` | ~0.9k |
+| T2D any status | `--query "type 2 diabetes" --status "" --max-studies 0` | ~12k |
+
+Example — expand to all diabetes statuses, then re-index:
+
+```bash
+# tunnels must be up (readyz OK)
+
+python -u scripts/fetch_clinicaltrials_eligibility.py \
+  --query "diabetes" \
+  --status "" \
+  --max-studies 0
+
+python scripts/index_trials_to_qdrant.py \
+  --sample-path data/raw/clinicaltrials/eligibility.jsonl \
+  --live
+
+curl -sS http://127.0.0.1:6333/collections/trial_criteria   # check points_count
+```
+
+`--max-studies 0` means **paginate until CT.gov has no more pages** for that query/filter (not “entire CT.gov”). Pulling the full registry (all conditions) is out of scope for the default path.
+
+Related scripts: `scripts/prepare_synthea_for_snowflake.py`, `scripts/put_copy_synthea_to_snowflake.py`, `scripts/fetch_clinicaltrials_eligibility.py`, `scripts/index_trials_to_qdrant.py`. See also [data/README.md](data/README.md).
+
+## Doctor demo (Streamlit)
+
+Private **demo UI** for clinicians/guests: login → pick a preset patient/note → call GKE `POST /v1/match` → render ranked trials. Matching stays on the backend; Streamlit only submits and displays.
+
+```bash
+# 1) API tunnel (bastion port-forward + optional SSH -L 18080 from Dev Container)
+# 2) Guest secrets
+mkdir -p .streamlit
+cp streamlit_app/secrets.toml.example .streamlit/secrets.toml
+# edit DEMO_GUEST_USERNAME / DEMO_GUEST_PASSWORD
+
+pip install -r streamlit_app/requirements.txt
+streamlit run streamlit_app/app.py --server.address 0.0.0.0 --server.port 8501
+```
+
+Details: [streamlit_app/README.md](streamlit_app/README.md).
+
 ## Deployed infra outputs (dev)
 
 Captured from `terraform apply` in `infra/terraform/envs/dev` (project `autonomous-agent-503517`). Refresh anytime with `terraform output`.

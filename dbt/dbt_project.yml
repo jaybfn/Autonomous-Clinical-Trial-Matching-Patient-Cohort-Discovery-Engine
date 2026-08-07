@@ -12,12 +12,12 @@ clean-targets: [target, dbt_packages]
 models:
   trialmatch:
     staging:
-      +schema: staging
+      +schema: STAGING
       +materialized: view
     marts:
-      +schema: marts
+      +schema: MARTS
       +materialized: table
     audit:
-      +schema: audit
+      +schema: AUDIT
       +materialized: view
       +enabled: true

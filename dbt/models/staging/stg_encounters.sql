@@ -4,8 +4,8 @@
 select
   id as encounter_id,
   patient as patient_id,
-  start as encounter_start,
-  stop as encounter_stop,
+  "START" as encounter_start,
+  "STOP" as encounter_stop,
   encounterclass as encounter_class,
   code as encounter_code,
   description as encounter_description,
