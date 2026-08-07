@@ -1,0 +1,12 @@
+# GCE Ingress defaults to a 30s backend timeout; /v1/match often needs longer.
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: trialmatch-api-backend-config
+  namespace: trialmatch
+  labels:
+    app.kubernetes.io/name: trialmatch-api
+spec:
+  timeoutSec: 180
+  connectionDraining:
+    drainingTimeoutSec: 60

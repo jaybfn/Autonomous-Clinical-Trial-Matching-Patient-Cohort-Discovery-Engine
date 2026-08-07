@@ -89,8 +89,13 @@ stay open for probes.
 # on bastion
 kubectl apply -f k8s/api/service.yaml
 kubectl apply -f k8s/api/ingress.yaml
+kubectl apply -f k8s/api/backendconfig.yaml
 kubectl -n trialmatch get ingress trialmatch-api
 ```
+
+Use the Ingress **ADDRESS** column (not a placeholder). If Terraform’s reserved
+`trialmatch-ingress-ip` differs and shows `RESERVED` / unused, prefer the IP on
+the Ingress for demos until the static IP is rebound.
 
 Resolve the static IP:
 

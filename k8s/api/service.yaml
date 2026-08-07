@@ -5,6 +5,8 @@ metadata:
   namespace: trialmatch
   labels:
     app.kubernetes.io/name: trialmatch-api
+  annotations:
+    cloud.google.com/backend-config: '{"default":"trialmatch-api-backend-config"}'
 spec:
   type: ClusterIP
   selector:
